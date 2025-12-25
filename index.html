@@ -2,64 +2,174 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>SMA Nusantara</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universitas Nusantara</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
             margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
             background-color: #f4f6f8;
+            color: #333;
         }
         header {
-            background-color: #2c3e50;
+            background-color: #0b3c5d;
             color: white;
             padding: 20px;
             text-align: center;
         }
         nav {
-            background-color: #34495e;
-            padding: 10px;
-            text-align: center;
+            background-color: #1d2731;
+            display: flex;
+            justify-content: center;
         }
         nav a {
             color: white;
-            margin: 0 15px;
+            padding: 14px 20px;
             text-decoration: none;
             font-weight: bold;
         }
         nav a:hover {
-            text-decoration: underline;
+            background-color: #328cc1;
         }
         .container {
-            padding: 20px;
+            padding: 30px;
+        }
+        .section {
+            background-color: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         h2 {
-            color: #2c3e50;
+            color: #0b3c5d;
+        }
+        .program-list li {
+            margin-bottom: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #eaeaea;
         }
         footer {
-            background-color: #2c3e50;
+            background-color: #0b3c5d;
             color: white;
             text-align: center;
-            padding: 10px;
-            margin-top: 30px;
+            padding: 15px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #328cc1;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background-color: #1d6fa5;
         }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>SMA Nusantara</h1>
-    <p>Mencetak Generasi Cerdas dan Berkarakter</p>
+    <h1>Universitas Nusantara</h1>
+    <p>Mencetak Generasi Unggul dan Berkarakter</p>
 </header>
 
 <nav>
-    <a href="#profil">Profil</a>
-    <a href="#visi">Visi & Misi</a>
-    <a href="#jurusan">Jurusan</a>
+    <a href="#tentang">Tentang</a>
+    <a href="#fakultas">Fakultas</a>
+    <a href="#program">Program Studi</a>
+    <a href="#pendaftaran">Pendaftaran</a>
     <a href="#kontak">Kontak</a>
 </nav>
 
 <div class="container">
-    <section id="profil">
-        <h2>Profil Sekolah</h2>
-        <p>
-            SMA Nusantara adalah sekolah menengah atas yang berkomitmen
+
+    <div class="section" id="tentang">
+        <h2>Tentang Universitas</h2>
+        <p>Universitas Nusantara adalah institusi pendidikan tinggi yang berkomitmen untuk menghasilkan lulusan berkualitas, berakhlak mulia, dan siap bersaing di dunia kerja nasional maupun internasional.</p>
+        <p>Didirikan pada tahun 2000, universitas ini telah memiliki ribuan alumni yang tersebar di berbagai bidang profesional.</p>
+    </div>
+
+    <div class="section" id="fakultas">
+        <h2>Fakultas</h2>
+        <ul class="program-list">
+            <li>Fakultas Ilmu Komputer</li>
+            <li>Fakultas Ekonomi dan Bisnis</li>
+            <li>Fakultas Teknik</li>
+            <li>Fakultas Ilmu Sosial dan Politik</li>
+            <li>Fakultas Keguruan dan Ilmu Pendidikan</li>
+        </ul>
+    </div>
+
+    <div class="section" id="program">
+        <h2>Program Studi</h2>
+        <table>
+            <tr>
+                <th>Fakultas</th>
+                <th>Program Studi</th>
+                <th>Jenjang</th>
+            </tr>
+            <tr>
+                <td>Ilmu Komputer</td>
+                <td>Teknik Informatika</td>
+                <td>S1</td>
+            </tr>
+            <tr>
+                <td>Ilmu Komputer</td>
+                <td>Sistem Informasi</td>
+                <td>S1</td>
+            </tr>
+            <tr>
+                <td>Ekonomi dan Bisnis</td>
+                <td>Manajemen</td>
+                <td>S1</td>
+            </tr>
+            <tr>
+                <td>Teknik</td>
+                <td>Teknik Sipil</td>
+                <td>S1</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section" id="pendaftaran">
+        <h2>Pendaftaran Mahasiswa Baru</h2>
+        <p>Pendaftaran mahasiswa baru Universitas Nusantara dibuka setiap tahun melalui jalur:</p>
+        <ul>
+            <li>Jalur Reguler</li>
+            <li>Jalur Prestasi</li>
+            <li>Jalur Beasiswa</li>
+        </ul>
+        <a href="#" class="btn">Daftar Sekarang</a>
+    </div>
+
+    <div class="section" id="kontak">
+        <h2>Kontak Kami</h2>
+        <p><strong>Alamat:</strong> Jl. Pendidikan No. 10, Indonesia</p>
+        <p><strong>Telepon:</strong> (021) 12345678</p>
+        <p><strong>Email:</strong> info@universitasnusantara.ac.id</p>
+    </div>
+
+</div>
+
+<footer>
+    <p>&copy; 2025 Universitas Nusantara. All Rights Reserved.</p>
+</footer>
+
+</body>
+</html>
