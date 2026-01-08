@@ -1,175 +1,92 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universitas Nusantara</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background-color: #f4f6f8;
-            color: #333;
-        }
-        header {
-            background-color: #0b3c5d;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        nav {
-            background-color: #1d2731;
-            display: flex;
-            justify-content: center;
-        }
-        nav a {
-            color: white;
-            padding: 14px 20px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        nav a:hover {
-            background-color: #328cc1;
-        }
-        .container {
-            padding: 30px;
-        }
-        .section {
-            background-color: white;
-            padding: 25px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        h2 {
-            color: #0b3c5d;
-        }
-        .program-list li {
-            margin-bottom: 8px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        table, th, td {
-            border: 1px solid #ccc;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #eaeaea;
-        }
-        footer {
-            background-color: #0b3c5d;
-            color: white;
-            text-align: center;
-            padding: 15px;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #328cc1;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        .btn:hover {
-            background-color: #1d6fa5;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Games to Learn English</title>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<header>
-    <h1>Universitas Nusantara</h1>
-    <p>Mencetak Generasi Unggul dan Berkarakter</p>
-</header>
+<section id="home" class="page active">
+  <h1>🎮 Games to Learn English</h1>
+  <button onclick="openPage('menu')">Monster Vocab</button>
+</section>
 
-<nav>
-    <a href="#tentang">Tentang</a>
-    <a href="#fakultas">Fakultas</a>
-    <a href="#program">Program Studi</a>
-    <a href="#pendaftaran">Pendaftaran</a>
-    <a href="#kontak">Kontak</a>
-</nav>
+<section id="menu" class="page">
+  <h2>Monster Vocab</h2>
+  <button onclick="openPage('choose')">Start</button>
+  <button onclick="openPage('reviewSelect')">Review</button>
+  <button onclick="openPage('home')">Back</button>
+</section>
 
-<div class="container">
+<section id="choose" class="page">
+  <h2>Choose Category</h2>
+  <div class="grid">
+    <button onclick="startGame('animals')">Animals</button>
+    <button onclick="startGame('numbers')">Numbers</button>
+    <button onclick="startGame('body')">Body</button>
+    <button onclick="startGame('hospital')">Hospital</button>
+    <button onclick="startGame('transport')">Transport</button>
+    <button onclick="startGame('sports')">Sports</button>
+    <button onclick="startGame('home')">Home</button>
+    <button onclick="startGame('music')">Music</button>
+    <button onclick="startGame('computer')">Computer</button>
+    <button onclick="startGame('food')">Food</button>
+    <button onclick="startGame('garden')">Garden</button>
+    <button onclick="startGame('bathroom')">Bathroom</button>
+  </div>
+  <button onclick="openPage('menu')">Back</button>
+</section>
 
-    <div class="section" id="tentang">
-        <h2>Tentang Universitas</h2>
-        <p>Universitas Nusantara adalah institusi pendidikan tinggi yang berkomitmen untuk menghasilkan lulusan berkualitas, berakhlak mulia, dan siap bersaing di dunia kerja nasional maupun internasional.</p>
-        <p>Didirikan pada tahun 2000, universitas ini telah memiliki ribuan alumni yang tersebar di berbagai bidang profesional.</p>
-    </div>
+<section id="game" class="page">
+  <div class="top">
+    <span id="timer">⏱ 5</span>
+    <span id="score">⭐ 0</span>
+  </div>
+  <h2 id="question"></h2>
+  <div id="answers"></div>
+</section>
 
-    <div class="section" id="fakultas">
-        <h2>Fakultas</h2>
-        <ul class="program-list">
-            <li>Fakultas Ilmu Komputer</li>
-            <li>Fakultas Ekonomi dan Bisnis</li>
-            <li>Fakultas Teknik</li>
-            <li>Fakultas Ilmu Sosial dan Politik</li>
-            <li>Fakultas Keguruan dan Ilmu Pendidikan</li>
-        </ul>
-    </div>
+<section id="gameover" class="page">
+  <h1>💀 Game Over</h1>
+  <p id="finalScore"></p>
+  <button onclick="retry()">Retry</button>
+  <button onclick="openPage('home')">Stop</button>
+</section>
 
-    <div class="section" id="program">
-        <h2>Program Studi</h2>
-        <table>
-            <tr>
-                <th>Fakultas</th>
-                <th>Program Studi</th>
-                <th>Jenjang</th>
-            </tr>
-            <tr>
-                <td>Ilmu Komputer</td>
-                <td>Teknik Informatika</td>
-                <td>S1</td>
-            </tr>
-            <tr>
-                <td>Ilmu Komputer</td>
-                <td>Sistem Informasi</td>
-                <td>S1</td>
-            </tr>
-            <tr>
-                <td>Ekonomi dan Bisnis</td>
-                <td>Manajemen</td>
-                <td>S1</td>
-            </tr>
-            <tr>
-                <td>Teknik</td>
-                <td>Teknik Sipil</td>
-                <td>S1</td>
-            </tr>
-        </table>
-    </div>
+<section id="reviewSelect" class="page">
+  <h2>Select Content</h2>
+  <div class="grid">
+    <button onclick="openReview('animals')">Animals</button>
+    <button onclick="openReview('numbers')">Numbers</button>
+    <button onclick="openReview('body')">Body</button>
+    <button onclick="openReview('hospital')">Hospital</button>
+    <button onclick="openReview('transport')">Transport</button>
+    <button onclick="openReview('sports')">Sports</button>
+    <button onclick="openReview('home')">Home</button>
+    <button onclick="openReview('music')">Music</button>
+    <button onclick="openReview('computer')">Computer</button>
+    <button onclick="openReview('food')">Food</button>
+    <button onclick="openReview('garden')">Garden</button>
+    <button onclick="openReview('bathroom')">Bathroom</button>
+  </div>
+  <button onclick="openPage('menu')">Back</button>
+</section>
 
-    <div class="section" id="pendaftaran">
-        <h2>Pendaftaran Mahasiswa Baru</h2>
-        <p>Pendaftaran mahasiswa baru Universitas Nusantara dibuka setiap tahun melalui jalur:</p>
-        <ul>
-            <li>Jalur Reguler</li>
-            <li>Jalur Prestasi</li>
-            <li>Jalur Beasiswa</li>
-        </ul>
-        <a href="#" class="btn">Daftar Sekarang</a>
-    </div>
+<section id="review" class="page">
+  <button class="back" onclick="openPage('reviewSelect')">⬅</button>
+  <div class="card">
+    <div id="reviewIcon"></div>
+    <p id="reviewText"></p>
+  </div>
+  <div class="controls">
+    <button onclick="prevReview()">◀</button>
+    <button onclick="toggleText()">Text</button>
+    <button onclick="speak()">🔊</button>
+    <button onclick="nextReview()">▶</button>
+  </div>
+</section>
 
-    <div class="section" id="kontak">
-        <h2>Kontak Kami</h2>
-        <p><strong>Alamat:</strong> Jl. Pendidikan No. 10, Indonesia</p>
-        <p><strong>Telepon:</strong> (021) 12345678</p>
-        <p><strong>Email:</strong> info@universitasnusantara.ac.id</p>
-    </div>
-
-</div>
-
-<footer>
-    <p>&copy; 2025 Universitas Nusantara. All Rights Reserved.</p>
-</footer>
-
+<script src="js/script.js"></script>
 </body>
 </html>
