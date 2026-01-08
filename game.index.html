@@ -3,24 +3,88 @@
 <head>
 <meta charset="UTF-8">
 <title>Games to Learn English</title>
-<link rel="stylesheet" href="css/style.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{
+  background:linear-gradient(135deg,#1e3c72,#2a5298);
+  color:white;
+  height:100vh;
+  overflow:hidden;
+}
+.page{
+  position:absolute;inset:0;
+  display:none;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+.page.active{display:flex}
+button{
+  padding:14px 26px;
+  margin:6px;
+  border:none;
+  border-radius:16px;
+  font-size:1rem;
+  cursor:pointer;
+  background:#ffdd57;
+  color:#333;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+  gap:10px;
+  max-width:520px;
+}
+.top{
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  padding:0 20px;
+}
+#answers button{width:200px}
+
+.correct{background:#4caf50!important;color:white;animation:correct .4s}
+.wrong{background:#f44336!important;color:white;animation:wrong .4s}
+@keyframes correct{50%{transform:scale(1.1)}}
+@keyframes wrong{
+  0%{transform:translateX(0)}
+  25%{transform:translateX(-6px)}
+  50%{transform:translateX(6px)}
+  75%{transform:translateX(-6px)}
+}
+.card{
+  background:rgba(0,0,0,.3);
+  padding:30px;
+  border-radius:20px;
+}
+#reviewIcon{font-size:90px}
+.back{
+  position:absolute;
+  top:20px;left:20px;
+}
+</style>
 </head>
+
 <body>
 
+<!-- HOME -->
 <section id="home" class="page active">
-  <h1>🎮 Games to Learn English</h1>
+  <h1>🎮 Games to Learn English</h1><br>
   <button onclick="openPage('menu')">Monster Vocab</button>
 </section>
 
+<!-- MENU -->
 <section id="menu" class="page">
-  <h2>Monster Vocab</h2>
+  <h2>Monster Vocab</h2><br>
   <button onclick="openPage('choose')">Start</button>
   <button onclick="openPage('reviewSelect')">Review</button>
   <button onclick="openPage('home')">Back</button>
 </section>
 
+<!-- CHOOSE -->
 <section id="choose" class="page">
-  <h2>Choose Category</h2>
+  <h2>Choose Category</h2><br>
   <div class="grid">
     <button onclick="startGame('animals')">Animals</button>
     <button onclick="startGame('numbers')">Numbers</button>
@@ -34,28 +98,31 @@
     <button onclick="startGame('food')">Food</button>
     <button onclick="startGame('garden')">Garden</button>
     <button onclick="startGame('bathroom')">Bathroom</button>
-  </div>
+  </div><br>
   <button onclick="openPage('menu')">Back</button>
 </section>
 
+<!-- GAME -->
 <section id="game" class="page">
   <div class="top">
     <span id="timer">⏱ 5</span>
     <span id="score">⭐ 0</span>
   </div>
-  <h2 id="question"></h2>
+  <h2 id="question"></h2><br>
   <div id="answers"></div>
 </section>
 
+<!-- GAME OVER -->
 <section id="gameover" class="page">
   <h1>💀 Game Over</h1>
-  <p id="finalScore"></p>
+  <p id="finalScore"></p><br>
   <button onclick="retry()">Retry</button>
   <button onclick="openPage('home')">Stop</button>
 </section>
 
+<!-- REVIEW SELECT -->
 <section id="reviewSelect" class="page">
-  <h2>Select Content</h2>
+  <h2>Select Content</h2><br>
   <div class="grid">
     <button onclick="openReview('animals')">Animals</button>
     <button onclick="openReview('numbers')">Numbers</button>
@@ -69,24 +136,102 @@
     <button onclick="openReview('food')">Food</button>
     <button onclick="openReview('garden')">Garden</button>
     <button onclick="openReview('bathroom')">Bathroom</button>
-  </div>
+  </div><br>
   <button onclick="openPage('menu')">Back</button>
 </section>
 
+<!-- REVIEW -->
 <section id="review" class="page">
   <button class="back" onclick="openPage('reviewSelect')">⬅</button>
   <div class="card">
     <div id="reviewIcon"></div>
     <p id="reviewText"></p>
-  </div>
-  <div class="controls">
-    <button onclick="prevReview()">◀</button>
-    <button onclick="toggleText()">Text</button>
-    <button onclick="speak()">🔊</button>
-    <button onclick="nextReview()">▶</button>
-  </div>
+  </div><br>
+  <button onclick="prevReview()">◀</button>
+  <button onclick="toggleText()">Text</button>
+  <button onclick="speak()">🔊</button>
+  <button onclick="nextReview()">▶</button>
 </section>
 
-<script src="js/script.js"></script>
+<script>
+/* PAGE */
+function openPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* SOUND */
+const audio=new (window.AudioContext||window.webkitAudioContext)();
+function playSound(f){
+  const o=audio.createOscillator(),g=audio.createGain();
+  o.connect(g);g.connect(audio.destination);
+  o.frequency.value=f;o.start();o.stop(audio.currentTime+.2);
+}
+
+/* DATA (ringkas tapi >10 kategori & soal) */
+const data={
+animals:['🐱Cat','🐶Dog','🐮Cow','🦁Lion','🐯Tiger','🐴Horse','🐵Monkey','🐔Chicken','🦆Duck','🐟Fish','🐦Bird','🐘Elephant','🐰Rabbit','🐍Snake','🐸Frog'],
+numbers:['1One','2Two','3Three','4Four','5Five','6Six','7Seven','8Eight','9Nine','10Ten','11Eleven','12Twelve','13Thirteen','14Fourteen','15Fifteen'],
+body:['🧠Head','👁Eye','👂Ear','👃Nose','👄Mouth','✋Hand','☝Finger','💪Arm','🦵Leg','🦶Foot','🦷Teeth','💇Hair','🧣Neck','🎒Back','🏋Shoulder'],
+hospital:['👨‍⚕Doctor','👩‍⚕Nurse','🏥Hospital','🚑Ambulance','💊Medicine','💉Injection','😷Mask','🌡Thermometer','♿Wheelchair','🩹Bandage','🛏Bed','❤️Heart','🩸Blood','🩻X-Ray','💊Pill'],
+transport:['🚗Car','🚌Bus','🚆Train','✈Plane','🚢Ship','🚲Bicycle','🏍Motorcycle','🚕Taxi','🚚Truck','🚁Helicopter','⛵Boat','🚇Subway','🛴Scooter','🚀Rocket','🚐Van']
+};
+
+/* GAME */
+let cat='',list=[],i=0,score=0,t=5,timer;
+
+function startGame(c){
+  cat=c;
+  list=[...data[c]].sort(()=>Math.random()-0.5);
+  i=0;score=0;
+  openPage('game');
+  nextQ();
+}
+function nextQ(){
+  if(i>=list.length){end();return;}
+  clearInterval(timer);t=5;
+  document.getElementById('timer').textContent='⏱ '+t;
+  document.getElementById('score').textContent='⭐ '+score;
+  const q=list[i];
+  document.getElementById('question').textContent='Select: '+q.slice(2);
+  const ans=document.getElementById('answers');
+  ans.innerHTML='';
+  list.sort(()=>Math.random()-0.5).slice(0,4).forEach(o=>{
+    const b=document.createElement('button');
+    b.textContent=o[0];
+    b.onclick=()=>{
+      clearInterval(timer);
+      if(o===q){score++;b.classList.add('correct');playSound(700)}
+      else{b.classList.add('wrong');playSound(200)}
+      setTimeout(()=>{i++;nextQ()},400);
+    };
+    ans.appendChild(b);
+  });
+  timer=setInterval(()=>{
+    t--;document.getElementById('timer').textContent='⏱ '+t;
+    if(t===0){clearInterval(timer);end()}
+  },1000);
+}
+function end(){
+  document.getElementById('finalScore').textContent=`Score: ${score}/${list.length}`;
+  openPage('gameover');
+}
+function retry(){startGame(cat)}
+
+/* REVIEW */
+let rcat='',ri=0,show=true;
+function openReview(c){rcat=c;ri=0;show=true;openPage('review');upd()}
+function upd(){
+  const d=data[rcat][ri];
+  document.getElementById('reviewIcon').textContent=d[0];
+  document.getElementById('reviewText').textContent=d.slice(2);
+  document.getElementById('reviewText').style.display=show?'block':'none';
+}
+function nextReview(){ri=(ri+1)%data[rcat].length;upd()}
+function prevReview(){ri=(ri-1+data[rcat].length)%data[rcat].length;upd()}
+function toggleText(){show=!show;upd()}
+function speak(){speechSynthesis.speak(new SpeechSynthesisUtterance(data[rcat][ri].slice(2)))}
+</script>
+
 </body>
 </html>
