@@ -8,127 +8,123 @@
 body{
   margin:0;
   font-family:Arial, sans-serif;
-  background:linear-gradient(135deg,#1e3c72,#2a5298);
+  background:#1e3c72;
   color:white;
   text-align:center;
 }
-.hidden{display:none}
 button{
-  padding:14px 24px;
-  border:none;
-  border-radius:14px;
+  padding:12px 20px;
   margin:6px;
-  font-size:16px;
+  border:none;
+  border-radius:10px;
   cursor:pointer;
+  font-size:16px;
 }
-.menu button{background:#ffdd57;color:#333}
-.answer{width:220px;background:white;color:#333}
-.correct{background:#4caf50!important;color:white}
-.wrong{background:#f44336!important;color:white}
+.menu button{background:#ffcc00;color:#333}
+.answer{background:white;color:#333;width:200px}
+.correct{background:#4caf50;color:white}
+.wrong{background:#f44336;color:white}
+.hidden{display:none}
 </style>
 </head>
 
 <body>
 
-<h1>🎮 English Vocabulary Game</h1>
+<h1>Games to Learn English</h1>
 
 <div id="menu" class="menu">
-  <button onclick="start('animals')">Animals</button>
-  <button onclick="start('numbers')">Numbers</button>
-  <button onclick="start('body')">Body</button>
-  <button onclick="start('food')">Food</button>
-  <button onclick="start('transport')">Transport</button>
+  <button onclick="startGame('animals')">Animals</button>
+  <button onclick="startGame('numbers')">Numbers</button>
+  <button onclick="startGame('body')">Body</button>
+  <button onclick="startGame('food')">Food</button>
+  <button onclick="startGame('transport')">Transport</button>
 </div>
 
 <div id="game" class="hidden">
   <h2 id="question"></h2>
   <div id="answers"></div>
-  <p id="progress"></p>
+  <p id="info"></p>
+  <button onclick="backMenu()">Back</button>
 </div>
-
-<div id="end" class="hidden">
-  <h2>Game Finished 🎉</h2>
-  <p id="score"></p>
-  <button onclick="location.reload()">Play Again</button>
-</div>
-
-<!-- SOUND -->
-<audio id="correctSound">
-  <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=">
-</audio>
-<audio id="wrongSound">
-  <source src="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=">
-</audio>
 
 <script>
-const questions={
+const data={
 animals:[
- {q:"Cat",a:["Cat","Dog","Cow","Horse"],c:0},
- {q:"Dog",a:["Bird","Dog","Fish","Lion"],c:1},
- {q:"Cow",a:["Cow","Cat","Goat","Duck"],c:0},
- {q:"Horse",a:["Pig","Horse","Dog","Cat"],c:1},
- {q:"Fish",a:["Bird","Fish","Cow","Cat"],c:1}
+ ["Cat",["Cat","Dog","Cow","Horse"],0],
+ ["Dog",["Cat","Dog","Fish","Cow"],1],
+ ["Bird",["Fish","Bird","Cow","Cat"],1],
+ ["Fish",["Fish","Dog","Bird","Cow"],0],
+ ["Cow",["Horse","Cow","Dog","Cat"],1]
 ],
 numbers:[
- {q:"One",a:["One","Two","Three","Four"],c:0},
- {q:"Five",a:["Six","Seven","Five","Eight"],c:2},
- {q:"Ten",a:["Nine","Ten","Eleven","Two"],c:1}
+ ["One",["One","Two","Three","Four"],0],
+ ["Five",["Six","Seven","Five","Eight"],2],
+ ["Ten",["Nine","Ten","Eleven","Two"],1]
 ],
 body:[
- {q:"Eye",a:["Eye","Hand","Foot","Nose"],c:0},
- {q:"Hand",a:["Leg","Hand","Eye","Ear"],c:1}
+ ["Eye",["Eye","Hand","Foot","Nose"],0],
+ ["Hand",["Leg","Hand","Eye","Ear"],1]
 ],
 food:[
- {q:"Rice",a:["Rice","Bread","Milk","Egg"],c:0},
- {q:"Milk",a:["Water","Milk","Juice","Tea"],c:1}
+ ["Rice",["Rice","Bread","Milk","Egg"],0],
+ ["Milk",["Tea","Water","Milk","Juice"],2]
 ],
 transport:[
- {q:"Car",a:["Bike","Car","Bus","Train"],c:1},
- {q:"Plane",a:["Ship","Plane","Car","Bike"],c:1}
+ ["Car",["Bike","Car","Bus","Train"],1],
+ ["Plane",["Ship","Plane","Car","Bike"],1]
 ]
 };
 
-let cat="",i=0,score=0;
+let category="",index=0,score=0;
 
-function start(c){
-  cat=c;i=0;score=0;
-  menu.classList.add("hidden");
-  game.classList.remove("hidden");
-  show();
+function startGame(cat){
+  category=cat;
+  index=0;
+  score=0;
+  document.getElementById("menu").classList.add("hidden");
+  document.getElementById("game").classList.remove("hidden");
+  showQuestion();
 }
 
-function show(){
-  if(i>=questions[cat].length){
-    game.classList.add("hidden");
-    end.classList.remove("hidden");
-    document.getElementById("score").innerText=
-      `Score: ${score}/${questions[cat].length}`;
+function showQuestion(){
+  if(index>=data[category].length){
+    alert("Game Over! Score: "+score);
+    backMenu();
     return;
   }
-  const q=questions[cat][i];
-  question.innerText=`Select: ${q.q}`;
-  answers.innerHTML="";
-  q.a.forEach((opt,idx)=>{
+
+  const q=data[category][index];
+  document.getElementById("question").innerText="Select: "+q[0];
+  document.getElementById("answers").innerHTML="";
+
+  q[1].forEach((opt,i)=>{
     const b=document.createElement("button");
     b.className="answer";
     b.innerText=opt;
-    b.onclick=()=>check(idx,b);
-    answers.appendChild(b);
+    b.onclick=()=>checkAnswer(i,q[2],b);
+    document.getElementById("answers").appendChild(b);
   });
-  progress.innerText=`${i+1} / ${questions[cat].length}`;
+
+  document.getElementById("info").innerText=
+    (index+1)+" / "+data[category].length;
 }
 
-function check(idx,btn){
-  const q=questions[cat][i];
-  if(idx===q.c){
+function checkAnswer(choice,correct,btn){
+  if(choice===correct){
     btn.classList.add("correct");
-    document.getElementById("correctSound").play();
     score++;
   }else{
     btn.classList.add("wrong");
-    document.getElementById("wrongSound").play();
   }
-  setTimeout(()=>{i++;show()},500);
+  setTimeout(()=>{
+    index++;
+    showQuestion();
+  },400);
+}
+
+function backMenu(){
+  document.getElementById("game").classList.add("hidden");
+  document.getElementById("menu").classList.remove("hidden");
 }
 </script>
 
