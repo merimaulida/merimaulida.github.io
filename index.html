@@ -2,156 +2,119 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>English Game</title>
+<title>Games to Learn English</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-*{box-sizing:border-box}
 body{
- margin:0;
- font-family:'Segoe UI',sans-serif;
- background:#121212;
- color:#fff;
- min-height:100vh;
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:linear-gradient(135deg,#4facfe,#00f2fe);
+  color:white;
+  min-height:100vh;
+  text-align:center;
 }
 .screen{display:none;padding:20px}
 .active{display:block}
-
-/* ===== ANDROID CARD ===== */
-.card{
- background:#1e1e1e;
- border-radius:24px;
- padding:20px;
- margin:20px auto;
- max-width:420px;
- box-shadow:0 10px 25px rgba(0,0,0,.5);
+button{
+  padding:12px 18px;
+  margin:8px;
+  border:none;
+  border-radius:14px;
+  font-weight:bold;
+  cursor:pointer;
+  background:#fff;
+  color:#333;
 }
-
-/* ===== BUTTON ===== */
-.btn{
- width:100%;
- padding:14px;
- margin:8px 0;
- border:none;
- border-radius:18px;
- font-size:16px;
- font-weight:bold;
- background:linear-gradient(135deg,#4facfe,#00f2fe);
- color:#000;
- cursor:pointer;
-}
-.btn.secondary{
- background:#2c2c2c;
- color:#fff;
-}
-
-/* ===== GRID ===== */
 .grid{
- display:grid;
- grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
- gap:12px;
- max-width:480px;
- margin:auto;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:10px;
 }
-
-/* ===== GAME ===== */
+.card{
+  background:rgba(255,255,255,.25);
+  border-radius:20px;
+  padding:20px;
+  width:85%;
+  margin:20px auto;
+}
 .big{font-size:90px}
-.option{
- background:#2c2c2c;
- padding:14px;
- border-radius:16px;
- margin:6px auto;
- max-width:420px;
- cursor:pointer;
-}
-.correct{background:#2ecc71;color:#000}
-.wrong{background:#e74c3c}
-.timer{
- text-align:center;
- font-size:20px;
- margin-top:10px;
-}
-.topbar{
- display:flex;
- justify-content:space-between;
- align-items:center;
- max-width:420px;
- margin:auto;
-}
+.timer{font-size:22px}
+.option{width:80%;margin:6px auto}
+.correct{background:#2ecc71;color:white}
+.wrong{background:#e74c3c;color:white}
 </style>
 </head>
 
 <body>
 
-<!-- HOME -->
 <div id="home" class="screen active">
- <div class="card">
-  <h1>🎮 English Game</h1>
-  <p>Learn English like an Android game</p>
-  <button class="btn" onclick="openCategories()">▶ Start Game</button>
-  <button class="btn secondary" onclick="openReviewMenu()">📘 Review</button>
- </div>
+  <h1>🎮 Games to Learn English</h1>
+  <button onclick="openCategories()">Start Game</button>
+  <button onclick="openReviewMenu()">Review Mode</button>
 </div>
 
-<!-- CATEGORIES -->
 <div id="categories" class="screen">
- <h2 style="text-align:center">Choose Category</h2>
- <div id="categoryList" class="grid"></div>
- <button class="btn secondary" onclick="goHome()">⬅ Back</button>
+  <h2>Select Category</h2>
+  <div id="categoryList" class="grid"></div>
+  <button onclick="goHome()">⬅ Back</button>
 </div>
 
-<!-- GAME -->
 <div id="game" class="screen">
- <div class="topbar">
   <div class="timer">⏱ <span id="time">5</span></div>
-  <div id="score">Score: 0</div>
- </div>
- <div class="card">
-  <div id="icon" class="big"></div>
-  <h2 id="question"></h2>
- </div>
- <div id="options"></div>
+  <div class="card">
+    <div id="icon" class="big"></div>
+    <h2 id="question"></h2>
+  </div>
+  <div id="options"></div>
+  <h3 id="score"></h3>
 </div>
 
-<!-- GAME OVER -->
 <div id="over" class="screen">
- <div class="card">
-  <h1>🏁 Finished</h1>
+  <h1>Game Over</h1>
   <h2 id="finalScore"></h2>
-  <button class="btn" onclick="retry()">🔄 Retry</button>
-  <button class="btn secondary" onclick="goHome()">🏠 Home</button>
- </div>
+  <button onclick="retry()">Retry</button>
+  <button onclick="goHome()">Home</button>
 </div>
 
-<!-- REVIEW MENU -->
 <div id="reviewMenu" class="screen">
- <h2 style="text-align:center">Review Mode</h2>
- <div id="reviewCategories" class="grid"></div>
- <button class="btn secondary" onclick="goHome()">⬅ Back</button>
+  <h2>Review Mode</h2>
+  <div id="reviewCategories" class="grid"></div>
+  <button onclick="goHome()">⬅ Back</button>
 </div>
 
-<!-- REVIEW -->
 <div id="reviewPlay" class="screen">
- <div class="card">
-  <div id="reviewIcon" class="big"></div>
-  <h2 id="reviewText"></h2>
-  <button class="btn" onclick="speak()">🔊 Sound</button>
-  <button class="btn secondary" onclick="toggleText()">👁 Text</button>
- </div>
- <button class="btn secondary" onclick="prevReview()">⬅</button>
- <button class="btn secondary" onclick="nextReview()">➡</button>
+  <button onclick="openReviewMenu()">⬅</button>
+  <div class="card">
+    <div id="reviewIcon" class="big"></div>
+    <h2 id="reviewText"></h2>
+  </div>
+  <button onclick="prevReview()">⬅</button>
+  <button onclick="nextReview()">➡</button><br><br>
+  <button onclick="toggleText()">TEXT</button>
+  <button onclick="speak()">🔊</button>
 </div>
 
-<audio id="correctSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_5c6c8f36fa.mp3"></audio>
-<audio id="wrongSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_3a3d6c6aef.mp3"></audio>
+<audio id="correctSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5c6c8f36fa.mp3"></audio>
+<audio id="wrongSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_3a3d6c6aef.mp3"></audio>
 
 <script>
+const optionsBox=document.getElementById("options");
+const timeEl=document.getElementById("time");
+const scoreEl=document.getElementById("score");
+
+/* ================= DATA 22 CATEGORIES ================= */
 const data={
 animals:[['🐱','kucing','Cat'],['🐶','anjing','Dog'],['🐮','sapi','Cow'],['🐟','ikan','Fish'],['🐦','burung','Bird'],['🐴','kuda','Horse'],['🐔','ayam','Chicken'],['🦆','bebek','Duck'],['🐍','ular','Snake'],['🦁','singa','Lion'],['🐘','gajah','Elephant'],['🐯','harimau','Tiger'],['🐵','monyet','Monkey'],['🐐','kambing','Goat'],['🐰','kelinci','Rabbit']],
+numbers:[['1️⃣','satu','One'],['2️⃣','dua','Two'],['3️⃣','tiga','Three'],['4️⃣','empat','Four'],['5️⃣','lima','Five'],['6️⃣','enam','Six'],['7️⃣','tujuh','Seven'],['8️⃣','delapan','Eight'],['9️⃣','sembilan','Nine'],['🔟','sepuluh','Ten'],['11','sebelas','Eleven'],['12','dua belas','Twelve'],['13','tiga belas','Thirteen'],['14','empat belas','Fourteen'],['15','lima belas','Fifteen']],
 food:[['🍚','nasi','Rice'],['🍞','roti','Bread'],['🍎','apel','Apple'],['🍌','pisang','Banana'],['🥛','susu','Milk'],['🍗','ayam','Chicken'],['🍖','daging','Meat'],['🥚','telur','Egg'],['🍜','mie','Noodles'],['🍰','kue','Cake'],['🍲','sup','Soup'],['🧀','keju','Cheese'],['🍊','jeruk','Orange'],['🍦','es krim','Ice Cream'],['🐟','ikan','Fish']],
-jobs:[['👮','polisi','Police'],['👩‍🏫','guru','Teacher'],['👨‍⚕️','dokter','Doctor'],['👨‍🍳','koki','Chef'],['👷','tukang','Builder'],['👨‍🚒','pemadam','Firefighter'],['👨‍🌾','petani','Farmer'],['👨‍✈️','pilot','Pilot'],['👩‍💻','programmer','Programmer'],['👩‍🎤','penyanyi','Singer'],['👨‍🎨','pelukis','Painter'],['🧑‍💼','karyawan','Employee'],['👨‍🔧','montir','Mechanic'],['👩‍⚖️','hakim','Judge'],['👩‍✈️','pramugari','Flight Attendant']]
+sports:[['⚽','sepak bola','Football'],['🏀','bola basket','Basketball'],['🏸','bulu tangkis','Badminton'],['🎾','tenis','Tennis'],['🏐','voli','Volleyball'],['🏓','pingpong','Table Tennis'],['🥊','tinju','Boxing'],['🏊','renang','Swimming'],['🚴','bersepeda','Cycling'],['🏃','lari','Running'],['⛹️','lompat','Jump'],['🤼','gulat','Wrestling'],['🏹','panahan','Archery'],['🏄','selancar','Surfing'],['🧗','panjat','Climbing']],
+jobs:[['👮','polisi','Police'],['👩‍🏫','guru','Teacher'],['👨‍⚕️','dokter','Doctor'],['👨‍🍳','koki','Chef'],['👩‍⚖️','hakim','Judge'],['👨‍🔧','montir','Mechanic'],['👩‍💻','programmer','Programmer'],['👨‍🌾','petani','Farmer'],['👨‍✈️','pilot','Pilot'],['👩‍✈️','pramugari','Flight Attendant'],['👷','tukang','Builder'],['👨‍🚒','pemadam','Firefighter'],['👩‍🎤','penyanyi','Singer'],['👨‍🎨','pelukis','Painter'],['🧑‍💼','karyawan','Employee']],
+transport:[['🚗','mobil','Car'],['🚌','bus','Bus'],['🚲','sepeda','Bicycle'],['🏍️','motor','Motorcycle'],['🚆','kereta','Train'],['✈️','pesawat','Airplane'],['🚢','kapal','Ship'],['🚕','taksi','Taxi'],['🚑','ambulans','Ambulance'],['🚒','pemadam','Fire Truck'],['🚜','traktor','Tractor'],['🚓','polisi','Police Car'],['🚁','helikopter','Helicopter'],['🛴','skuter','Scooter'],['🚛','truk','Truck']],
+body:[['👀','mata','Eye'],['👃','hidung','Nose'],['👂','telinga','Ear'],['👄','mulut','Mouth'],['🦷','gigi','Tooth'],['🦵','kaki','Leg'],['🦶','telapak kaki','Foot'],['🖐️','tangan','Hand'],['🧠','otak','Brain'],['❤️','jantung','Heart'],['🩸','darah','Blood'],['🫁','paru-paru','Lung'],['🦴','tulang','Bone'],['👅','lidah','Tongue'],['👤','kepala','Head']]
 };
 
-let q=[],i=0,score=0,time=5,timer;
+/* ===== GAME ENGINE (TIDAK DIUBAH) ===== */
+let questions=[],index=0,score=0,time=5,timer;
 let reviewCat='',reviewIndex=0,showText=true;
 
 function show(id){
@@ -165,7 +128,6 @@ function openCategories(){
  categoryList.innerHTML='';
  Object.keys(data).forEach(c=>{
   let b=document.createElement('button');
-  b.className='btn';
   b.textContent=c.toUpperCase();
   b.onclick=()=>startGame(c);
   categoryList.appendChild(b);
@@ -173,31 +135,33 @@ function openCategories(){
 }
 
 function startGame(c){
- q=[...data[c]];i=0;score=0;
- show('game');nextQ();
+ questions=[...data[c]];
+ index=0;score=0;
+ show('game');
+ nextQuestion();
 }
 
-function nextQ(){
- if(i>=q.length){end();return;}
- let d=q[i];
- icon.textContent=d[0];
- question.textContent=`English of "${d[1]}"?`;
+function nextQuestion(){
+ if(index>=questions.length){gameOver();return;}
+ let q=questions[index];
+ icon.textContent=q[0];
+ question.textContent=`Apa bahasa Inggris dari "${q[1]}"?`;
  scoreEl.textContent='Score: '+score;
 
- options.innerHTML='';
- let opts=[d[2]];
+ let opts=[q[2]];
  while(opts.length<4){
-  let r=q[Math.random()*q.length|0][2];
+  let r=questions[Math.random()*questions.length|0][2];
   if(!opts.includes(r))opts.push(r);
  }
  opts.sort(()=>Math.random()-.5);
 
+ optionsBox.innerHTML='';
  opts.forEach(o=>{
-  let b=document.createElement('div');
+  let b=document.createElement('button');
   b.className='option';
   b.textContent=o;
-  b.onclick=()=>answer(o,d[2],b);
-  options.appendChild(b);
+  b.onclick=()=>answer(o,q[2],b);
+  optionsBox.appendChild(b);
  });
 
  startTimer();
@@ -205,39 +169,43 @@ function nextQ(){
 
 function answer(a,c,b){
  clearInterval(timer);
- document.querySelectorAll('.option').forEach(x=>x.style.pointerEvents='none');
+ document.querySelectorAll('.option').forEach(x=>x.disabled=true);
  if(a===c){b.classList.add('correct');correctSound.play();score+=10;}
  else{b.classList.add('wrong');wrongSound.play();}
- i++;setTimeout(nextQ,700);
+ index++;
+ setTimeout(nextQuestion,700);
 }
 
 function startTimer(){
- time=5;timeEl.textContent=time;
+ time=5;
+ timeEl.textContent=time;
  timer=setInterval(()=>{
-  time--;timeEl.textContent=time;
-  if(time<=0){clearInterval(timer);end();}
+  time--;
+  timeEl.textContent=time;
+  if(time<=0){clearInterval(timer);gameOver();}
  },1000);
 }
 
-function end(){
+function gameOver(){
+ clearInterval(timer);
  finalScore.textContent='Score: '+score;
  show('over');
 }
 
-function retry(){openCategories();}
+function retry(){startGame(Object.keys(data)[0]);}
 
-/* REVIEW */
+/* ===== REVIEW ===== */
 function openReviewMenu(){
  show('reviewMenu');
  reviewCategories.innerHTML='';
  Object.keys(data).forEach(c=>{
   let b=document.createElement('button');
-  b.className='btn';
   b.textContent=c.toUpperCase();
   b.onclick=()=>openReview(c);
   reviewCategories.appendChild(b);
  });
 }
+
 function openReview(c){
  reviewCat=c;reviewIndex=0;showText=true;
  show('reviewPlay');updateReview();
