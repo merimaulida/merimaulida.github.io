@@ -14,11 +14,7 @@ body{
  text-align:center;
 }
 .hidden{display:none}
-.container{
- max-width:520px;
- margin:auto;
- padding:20px;
-}
+.container{max-width:520px;margin:auto;padding:20px}
 .card{
  background:rgba(255,255,255,.15);
  border-radius:20px;
@@ -39,10 +35,7 @@ body{
  background:#fff;
  color:#0077ff;
 }
-.btn.dark{
- background:#222;
- color:#fff;
-}
+.btn.dark{background:#222;color:#fff}
 .grid{
  display:grid;
  grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
@@ -65,15 +58,14 @@ body{
 </head>
 
 <body>
-
 <div class="container">
 
 <!-- HOME -->
 <div id="home">
  <div class="card">
   <h1>🎮 English Game</h1>
-  <p>Pilih kategori & jawab soal</p>
   <button class="btn" onclick="openCategories()">▶ START</button>
+  <button class="btn dark" onclick="openReviewMenu()">📘 REVIEW</button>
  </div>
 </div>
 
@@ -104,13 +96,31 @@ body{
  </div>
 </div>
 
+<!-- REVIEW MENU -->
+<div id="reviewMenu" class="hidden">
+ <h2>Review Kategori</h2>
+ <div id="reviewCategoryList" class="grid"></div>
+ <button class="btn dark" onclick="goHome()">⬅ Kembali</button>
+</div>
+
+<!-- REVIEW PLAY -->
+<div id="reviewPlay" class="hidden">
+ <button class="btn dark" onclick="openReviewMenu()">⬅ Back</button>
+ <div class="card">
+  <div id="reviewIcon" class="big"></div>
+  <h2 id="reviewText"></h2>
+ </div>
+ <button class="btn" onclick="prevReview()">⬅</button>
+ <button class="btn" onclick="nextReview()">➡</button>
+ <button class="btn dark" onclick="speak()">🔊 Sound</button>
+</div>
+
 </div>
 
 <audio id="correctSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_5c6c8f36fa.mp3"></audio>
 <audio id="wrongSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_3a3d6c6aef.mp3"></audio>
 
 <script>
-// ================= DATA =================
 const categories=[
 "animals","food","jobs","sports","transport","home","computer","body",
 "music","colors","numbers","letters","hospital","garden","kitchen",
@@ -123,136 +133,129 @@ const data={
   ["🐔","ayam","chicken"],["🐟","ikan","fish"]
  ],
  food:[
-  ["🍎","apel","apple"],["🍌","pisang","banana"],["🍞","roti","bread"],
-  ["🍚","nasi","rice"],["🍗","ayam goreng","fried chicken"]
+  ["🍎","apel","apple"],["🍌","pisang","banana"],
+  ["🍚","nasi","rice"],["🍞","roti","bread"]
  ],
  jobs:[
   ["👮","polisi","police"],["👨‍⚕️","dokter","doctor"],
-  ["👨‍🏫","guru","teacher"],["👨‍🍳","koki","chef"]
+  ["👨‍🏫","guru","teacher"]
  ]
 };
 
-// isi kategori lain otomatis biar aman
 categories.forEach(c=>{
  if(!data[c]){
   data[c]=[
-   ["❓","contoh","example"],
    ["⭐","bintang","star"],
    ["📦","kotak","box"],
    ["🏠","rumah","house"],
-   ["🚗","mobil","car"]
+   ["🚗","mobil","car"],
+   ["🌳","pohon","tree"]
   ];
  }
 });
 
-// ================ GAME LOGIC =================
-let currentQuestions=[];
-let index=0;
-let score=0;
-let timer;
-let time=10;
+let current=[],i=0,score=0,time=10,timer;
+let reviewCat="",reviewIndex=0;
 
-const home=document.getElementById("home");
-const categoriesDiv=document.getElementById("categories");
-const game=document.getElementById("game");
-const over=document.getElementById("over");
-
-function show(el){
- home.classList.add("hidden");
- categoriesDiv.classList.add("hidden");
- game.classList.add("hidden");
- over.classList.add("hidden");
- el.classList.remove("hidden");
+function show(id){
+ ["home","categories","game","over","reviewMenu","reviewPlay"]
+ .forEach(x=>document.getElementById(x).classList.add("hidden"));
+ document.getElementById(id).classList.remove("hidden");
 }
-
-function goHome(){clearInterval(timer);show(home);}
+function goHome(){clearInterval(timer);show("home");}
 
 function openCategories(){
- show(categoriesDiv);
- const list=document.getElementById("categoryList");
- list.innerHTML="";
+ show("categories");
+ categoryList.innerHTML="";
  categories.forEach(c=>{
-  const b=document.createElement("button");
+  let b=document.createElement("button");
   b.className="btn";
   b.textContent=c.toUpperCase();
   b.onclick=()=>startGame(c);
-  list.appendChild(b);
+  categoryList.appendChild(b);
  });
 }
 
 function startGame(cat){
- currentQuestions=[...data[cat]];
- index=0;
- score=0;
- show(game);
+ current=[...data[cat]];
+ i=0;score=0;
+ show("game");
  nextQuestion();
 }
 
 function nextQuestion(){
- if(index>=currentQuestions.length){
-  endGame();
-  return;
- }
- const q=currentQuestions[index];
- document.getElementById("icon").textContent=q[0];
- document.getElementById("question").textContent=
-  `Apa bahasa Inggris dari "${q[1]}"?`;
-
- const optionsDiv=document.getElementById("options");
- optionsDiv.innerHTML="";
-
+ if(i>=current.length){endGame();return;}
+ let q=current[i];
+ icon.textContent=q[0];
+ question.textContent=`Apa bahasa Inggris dari "${q[1]}"?`;
+ options.innerHTML="";
  let answers=[q[2]];
  while(answers.length<4){
-  let r=currentQuestions[Math.random()*currentQuestions.length|0][2];
+  let r=current[Math.random()*current.length|0][2];
   if(!answers.includes(r))answers.push(r);
  }
  answers.sort(()=>Math.random()-.5);
-
  answers.forEach(a=>{
-  const div=document.createElement("div");
-  div.className="option";
-  div.textContent=a;
-  div.onclick=()=>checkAnswer(a,q[2],div);
-  optionsDiv.appendChild(div);
+  let d=document.createElement("div");
+  d.className="option";
+  d.textContent=a;
+  d.onclick=()=>check(a,q[2],d);
+  options.appendChild(d);
  });
-
  startTimer();
 }
 
-function checkAnswer(ans,correct,el){
+function check(a,c,el){
  clearInterval(timer);
  document.querySelectorAll(".option").forEach(o=>o.style.pointerEvents="none");
- if(ans===correct){
-  el.classList.add("correct");
-  document.getElementById("correctSound").play();
-  score+=10;
- }else{
-  el.classList.add("wrong");
-  document.getElementById("wrongSound").play();
- }
- index++;
- setTimeout(nextQuestion,800);
+ if(a===c){el.classList.add("correct");correctSound.play();score+=10;}
+ else{el.classList.add("wrong");wrongSound.play();}
+ i++;setTimeout(nextQuestion,700);
 }
 
 function startTimer(){
- time=10;
- document.getElementById("time").textContent=time;
+ time=10;timeEl.textContent=time;
  timer=setInterval(()=>{
-  time--;
-  document.getElementById("time").textContent=time;
-  if(time<=0){
-   clearInterval(timer);
-   index++;
-   nextQuestion();
-  }
+  time--;timeEl.textContent=time;
+  if(time<=0){clearInterval(timer);i++;nextQuestion();}
  },1000);
 }
 
 function endGame(){
- document.getElementById("finalScore").textContent="Score: "+score;
- show(over);
+ finalScore.textContent="Score: "+score;
+ show("over");
+}
+
+/* REVIEW */
+function openReviewMenu(){
+ show("reviewMenu");
+ reviewCategoryList.innerHTML="";
+ categories.forEach(c=>{
+  let b=document.createElement("button");
+  b.className="btn";
+  b.textContent=c.toUpperCase();
+  b.onclick=()=>openReview(c);
+  reviewCategoryList.appendChild(b);
+ });
+}
+
+function openReview(c){
+ reviewCat=c;reviewIndex=0;
+ show("reviewPlay");updateReview();
+}
+
+function updateReview(){
+ let d=data[reviewCat][reviewIndex];
+ reviewIcon.textContent=d[0];
+ reviewText.textContent=`${d[1]} = ${d[2]}`;
+}
+
+function nextReview(){reviewIndex=(reviewIndex+1)%data[reviewCat].length;updateReview();}
+function prevReview(){reviewIndex=(reviewIndex-1+data[reviewCat].length)%data[reviewCat].length;updateReview();}
+function speak(){
+ let u=new SpeechSynthesisUtterance(data[reviewCat][reviewIndex][2]);
+ u.lang="en-US";speechSynthesis.speak(u);
 }
 </script>
-
 </body>
 </html>
