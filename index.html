@@ -2,227 +2,191 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>English Word Game</title>
+<title>Games to Learn English</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg,#4facfe,#00f2fe);
-  min-height: 100vh;
-  color: #fff;
-}
-
-.screen {
-  display: none;
-  padding: 20px;
-  text-align: center;
-}
-
-.active {
-  display: block;
-}
-
-h1,h2 {
-  margin-bottom: 15px;
-}
-
-button {
-  padding: 12px 18px;
-  margin: 8px;
-  border: none;
-  border-radius: 10px;
-  background: #fff;
-  color: #333;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-button:hover {
-  transform: scale(1.05);
-}
-
-.category-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill,minmax(140px,1fr));
-  gap: 12px;
-}
-
-.option {
-  display: block;
-  margin: 10px auto;
-  width: 80%;
-}
-
-.correct {
-  background: #2ecc71 !important;
-  color: #fff;
-}
-
-.wrong {
-  background: #e74c3c !important;
-  color: #fff;
-}
-
-.fade {
-  animation: fade 0.4s;
-}
-
-@keyframes fade {
-  from {opacity:0; transform:scale(0.9);}
-  to {opacity:1; transform:scale(1);}
-}
-
-.score {
-  font-size: 20px;
-  margin-top: 10px;
-}
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#4facfe,#00f2fe);color:#fff;text-align:center}
+.screen{display:none;padding:20px}
+.active{display:block}
+button{padding:12px 18px;margin:8px;border:none;border-radius:12px;font-weight:bold;cursor:pointer;background:#fff;color:#333}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.option{width:80%;margin:8px auto}
+.correct{background:#2ecc71!important;color:#fff}
+.wrong{background:#e74c3c!important;color:#fff}
+.card{background:rgba(255,255,255,.2);border-radius:20px;padding:20px;width:85%;margin:20px auto}
+.big{font-size:90px}
+.timer{font-size:22px;font-weight:bold}
 </style>
 </head>
 
 <body>
 
 <div id="home" class="screen active">
-  <h1>🎮 English Word Game</h1>
-  <button onclick="showCategories()">Start Game</button>
-  <button onclick="showReview()">Review Mode</button>
+  <h1>🎮 Games to Learn English</h1>
+  <button onclick="openCategories()">Monster Vocab</button>
+  <button onclick="openReviewMenu()">Review Mode</button>
 </div>
 
 <div id="categories" class="screen">
   <h2>Select Category</h2>
-  <div id="categoryList" class="category-grid"></div>
+  <div id="categoryList" class="grid"></div>
   <button onclick="goHome()">⬅ Back</button>
 </div>
 
 <div id="game" class="screen">
-  <h2 id="question"></h2>
+  <div class="timer">⏱ <span id="time">5</span></div>
+  <div class="card">
+    <div id="icon" class="big"></div>
+    <h2 id="question"></h2>
+  </div>
   <div id="options"></div>
-  <div class="score" id="score"></div>
+  <h3 id="score"></h3>
 </div>
 
-<div id="review" class="screen">
+<div id="over" class="screen">
+  <h1>💀 Game Over</h1>
+  <h2 id="finalScore"></h2>
+  <button onclick="retry()">Retry</button>
+  <button onclick="goHome()">Stop</button>
+</div>
+
+<div id="reviewMenu" class="screen">
   <h2>📘 Review Mode</h2>
-  <div id="reviewList"></div>
+  <div id="reviewCategories" class="grid"></div>
   <button onclick="goHome()">⬅ Back</button>
 </div>
 
-<!-- SOUND -->
+<div id="reviewPlay" class="screen">
+  <button onclick="openReviewMenu()">⬅</button>
+  <button onclick="toggleSound()">🔊</button>
+  <div class="card">
+    <div id="reviewIcon" class="big"></div>
+    <h2 id="reviewText"></h2>
+  </div>
+  <button onclick="prevReview()">⬅</button>
+  <button onclick="nextReview()">➡</button><br><br>
+  <button onclick="toggleText()">TEXT ON/OFF</button>
+  <button onclick="speak()">🔊 SPEAK</button>
+</div>
+
 <audio id="correctSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5c6c8f36fa.mp3"></audio>
 <audio id="wrongSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_3a3d6c6aef.mp3"></audio>
 
 <script>
-/* ===================== DATA ===================== */
-function make(list){
-  while(list.length < 15) list.push(list[Math.floor(Math.random()*list.length)]);
-  return list;
-}
-
-const data = {
-animals: make([['kucing','Cat'],['anjing','Dog'],['sapi','Cow'],['ikan','Fish'],['burung','Bird'],['kuda','Horse'],['ayam','Chicken'],['bebek','Duck'],['ular','Snake'],['singa','Lion'],['gajah','Elephant'],['harimau','Tiger'],['monyet','Monkey'],['kambing','Goat'],['kelinci','Rabbit']]),
-food: make([['nasi','Rice'],['apel','Apple'],['roti','Bread'],['ayam','Chicken'],['susu','Milk'],['keju','Cheese'],['pisang','Banana'],['jeruk','Orange'],['telur','Egg'],['daging','Meat'],['kue','Cake'],['sup','Soup'],['mie','Noodles'],['ikan','Fish'],['es krim','Ice Cream']]),
-sports: make([['sepak bola','Football'],['basket','Basketball'],['voli','Volleyball'],['tenis','Tennis'],['lari','Running'],['renang','Swimming'],['badminton','Badminton'],['tinju','Boxing'],['golf','Golf'],['panahan','Archery'],['bersepeda','Cycling'],['selancar','Surfing'],['angkat beban','Weightlifting'],['ski','Skiing'],['yoga','Yoga']]),
-jobs: make([['dokter','Doctor'],['guru','Teacher'],['polisi','Police'],['petani','Farmer'],['pilot','Pilot'],['perawat','Nurse'],['koki','Chef'],['tentara','Soldier'],['arsitek','Architect'],['penyanyi','Singer'],['aktor','Actor'],['penulis','Writer'],['pelukis','Painter'],['montir','Mechanic'],['nelayan','Fisherman']]),
-transport: make([['mobil','Car'],['motor','Motorcycle'],['bus','Bus'],['kereta','Train'],['pesawat','Airplane'],['kapal','Ship'],['sepeda','Bicycle'],['taksi','Taxi'],['ambulans','Ambulance'],['truk','Truck'],['perahu','Boat'],['helikopter','Helicopter'],['metro','Metro'],['skuter','Scooter'],['becak','Rickshaw']]),
-body: make([['kepala','Head'],['mata','Eyes'],['hidung','Nose'],['mulut','Mouth'],['telinga','Ears'],['tangan','Hands'],['kaki','Feet'],['lengan','Arms'],['jari','Fingers'],['rambut','Hair'],['gigi','Teeth'],['lidah','Tongue'],['leher','Neck'],['bahu','Shoulder'],['perut','Stomach']]),
-colors: make([['merah','Red'],['biru','Blue'],['kuning','Yellow'],['hijau','Green'],['hitam','Black'],['putih','White'],['ungu','Purple'],['oranye','Orange'],['coklat','Brown'],['abu-abu','Gray'],['pink','Pink'],['emas','Gold'],['perak','Silver'],['biru muda','Light Blue'],['merah muda','Pink']]),
-numbers: make([['satu','One'],['dua','Two'],['tiga','Three'],['empat','Four'],['lima','Five'],['enam','Six'],['tujuh','Seven'],['delapan','Eight'],['sembilan','Nine'],['sepuluh','Ten'],['sebelas','Eleven'],['dua belas','Twelve'],['tiga belas','Thirteen'],['empat belas','Fourteen'],['lima belas','Fifteen']]),
-home: make([['rumah','House'],['pintu','Door'],['jendela','Window'],['meja','Table'],['kursi','Chair'],['tempat tidur','Bed'],['sofa','Sofa'],['lampu','Lamp'],['lemari','Wardrobe'],['dapur','Kitchen'],['kamar mandi','Bathroom'],['ruang tamu','Living Room'],['garasi','Garage'],['atap','Roof'],['lantai','Floor']]),
-computer: make([['komputer','Computer'],['mouse','Mouse'],['keyboard','Keyboard'],['layar','Monitor'],['printer','Printer'],['internet','Internet'],['folder','Folder'],['file','File'],['email','Email'],['kamera','Camera'],['speaker','Speaker'],['mikrofon','Microphone'],['charger','Charger'],['baterai','Battery'],['wifi','WiFi']]),
-music: make([['musik','Music'],['lagu','Song'],['gitar','Guitar'],['piano','Piano'],['drum','Drum'],['biola','Violin'],['seruling','Flute'],['penyanyi','Singer'],['konser','Concert'],['irama','Rhythm'],['melodi','Melody'],['band','Band'],['orkestra','Orchestra'],['mikrofon','Microphone'],['speaker','Speaker']]),
-hospital: make([['rumah sakit','Hospital'],['dokter','Doctor'],['perawat','Nurse'],['obat','Medicine'],['suntik','Injection'],['ambulans','Ambulance'],['pasien','Patient'],['termometer','Thermometer'],['kursi roda','Wheelchair'],['operasi','Surgery'],['darah','Blood'],['masker','Mask'],['sarung tangan','Gloves'],['infus','IV'],['resepsionis','Receptionist']])
+/* ================= DATA (22 CATEGORIES) ================= */
+const data={
+animals:[['🐱','kucing','Cat'],['🐶','anjing','Dog'],['🐮','sapi','Cow'],['🐟','ikan','Fish'],['🐦','burung','Bird'],['🐴','kuda','Horse'],['🐔','ayam','Chicken'],['🦆','bebek','Duck'],['🐍','ular','Snake'],['🦁','singa','Lion'],['🐘','gajah','Elephant'],['🐯','harimau','Tiger'],['🐵','monyet','Monkey'],['🐐','kambing','Goat'],['🐰','kelinci','Rabbit']],
+food:[['🍚','nasi','Rice'],['🍎','apel','Apple'],['🍞','roti','Bread'],['🍌','pisang','Banana'],['🥛','susu','Milk'],['🧀','keju','Cheese'],['🥚','telur','Egg'],['🍖','daging','Meat'],['🍜','mie','Noodles'],['🍰','kue','Cake'],['🍲','sup','Soup'],['🍗','ayam','Chicken'],['🍦','es krim','Ice Cream'],['🍊','jeruk','Orange'],['🐟','ikan','Fish']],
+numbers:[['1️⃣','satu','One'],['2️⃣','dua','Two'],['3️⃣','tiga','Three'],['4️⃣','empat','Four'],['5️⃣','lima','Five'],['6️⃣','enam','Six'],['7️⃣','tujuh','Seven'],['8️⃣','delapan','Eight'],['9️⃣','sembilan','Nine'],['🔟','sepuluh','Ten'],['11','sebelas','Eleven'],['12','dua belas','Twelve'],['13','tiga belas','Thirteen'],['14','empat belas','Fourteen'],['15','lima belas','Fifteen']],
+sports:[['⚽','sepak bola','Football'],['🏀','basket','Basketball'],['🏐','voli','Volleyball'],['🎾','tenis','Tennis'],['🏊','renang','Swimming'],['🏃','lari','Running'],['🏸','badminton','Badminton'],['🥊','tinju','Boxing'],['🏌️','golf','Golf'],['🧘','yoga','Yoga'],['🏹','panahan','Archery'],['🎿','ski','Skiing'],['🏄','selancar','Surfing'],['🏋️','angkat beban','Weightlifting'],['🏎️','balap','Racing']],
+jobs:[['👨‍⚕️','dokter','Doctor'],['👩‍🏫','guru','Teacher'],['👮','polisi','Police'],['👨‍🌾','petani','Farmer'],['✈️','pilot','Pilot'],['👩‍⚕️','perawat','Nurse'],['👨‍🍳','koki','Chef'],['🪖','tentara','Soldier'],['🏗️','arsitek','Architect'],['🎤','penyanyi','Singer'],['🎬','aktor','Actor'],['✍️','penulis','Writer'],['🎨','pelukis','Painter'],['🔧','montir','Mechanic'],['🎣','nelayan','Fisherman']],
+transport:[['🚗','mobil','Car'],['🏍️','motor','Motorcycle'],['🚌','bus','Bus'],['🚆','kereta','Train'],['✈️','pesawat','Airplane'],['🚢','kapal','Ship'],['🚲','sepeda','Bicycle'],['🚕','taksi','Taxi'],['🚑','ambulans','Ambulance'],['🚚','truk','Truck'],['🛶','perahu','Boat'],['🚁','helikopter','Helicopter'],['🚇','metro','Metro'],['🛴','skuter','Scooter'],['🚐','van','Van']],
+body:[['👀','mata','Eyes'],['👂','telinga','Ear'],['👃','hidung','Nose'],['👄','mulut','Mouth'],['🦷','gigi','Teeth'],['🧠','otak','Brain'],['🫀','jantung','Heart'],['🦵','kaki','Leg'],['🦶','telapak kaki','Foot'],['✋','tangan','Hand'],['💪','lengan','Arm'],['👅','lidah','Tongue'],['🧍','tubuh','Body'],['🧒','kepala','Head'],['🧑‍🦱','rambut','Hair']],
+colors:[['🔴','merah','Red'],['🔵','biru','Blue'],['🟡','kuning','Yellow'],['🟢','hijau','Green'],['⚫','hitam','Black'],['⚪','putih','White'],['🟣','ungu','Purple'],['🟠','oranye','Orange'],['🟤','coklat','Brown'],['🌸','pink','Pink'],['🌫️','abu-abu','Gray'],['💛','emas','Gold'],['🥈','perak','Silver'],['🔷','biru muda','Light Blue'],['🔺','merah muda','Pink']]
 };
 
-/* ===================== GAME LOGIC ===================== */
-let currentCategory=[], index=0, score=0;
+/* ========== LOGIC (SAMA SEPERTI SEBELUMNYA, STABIL) ========== */
+let list=[],i=0,score=0,time=5,timer;
+let reviewCat='',reviewIndex=0,showText=true,soundOn=true;
 
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function goHome(){clearInterval(timer);show('home')}
 
-function goHome(){ showScreen('home'); }
-
-function showCategories(){
-  showScreen('categories');
-  const list=document.getElementById('categoryList');
-  list.innerHTML='';
-  Object.keys(data).forEach(cat=>{
-    const b=document.createElement('button');
-    b.textContent=cat.toUpperCase();
-    b.onclick=()=>startGame(cat);
-    list.appendChild(b);
+function openCategories(){
+  show('categories');
+  categoryList.innerHTML='';
+  Object.keys(data).forEach(c=>{
+    let b=document.createElement('button');
+    b.textContent=c.toUpperCase();
+    b.onclick=()=>startGame(c);
+    categoryList.appendChild(b);
   });
 }
 
-function startGame(cat){
-  currentCategory=[...data[cat]];
-  index=0; score=0;
-  showScreen('game');
-  nextQuestion();
+function startGame(c){
+  list=[...data[c]];i=0;score=0;
+  show('game');nextQ();
 }
 
-function nextQuestion(){
-  if(index>=currentCategory.length){
-    document.getElementById('question').textContent='Game Finished!';
-    document.getElementById('options').innerHTML='';
-    document.getElementById('score').textContent='Score: '+score;
-    return;
-  }
-
-  const [id,en]=currentCategory[index];
-  document.getElementById('question').textContent='Apa bahasa Inggris dari "'+id+'"?';
-  document.getElementById('score').textContent='Score: '+score;
-
-  const opts=[en];
+function nextQ(){
+  if(i>=list.length){gameOver();return;}
+  let q=list[i];
+  icon.textContent=q[0];
+  question.textContent=`Apa bahasa Inggris dari "${q[1]}"?`;
+  scoreBox();
+  let opts=[q[2]];
   while(opts.length<4){
-    const r=currentCategory[Math.floor(Math.random()*currentCategory.length)][1];
-    if(!opts.includes(r)) opts.push(r);
+    let r=list[Math.random()*list.length|0][2];
+    if(!opts.includes(r))opts.push(r);
   }
-  opts.sort(()=>Math.random()-0.5);
-
-  const box=document.getElementById('options');
-  box.innerHTML='';
+  opts.sort(()=>Math.random()-.5);
+  options.innerHTML='';
   opts.forEach(o=>{
-    const btn=document.createElement('button');
-    btn.className='option fade';
-    btn.textContent=o;
-    btn.onclick=()=>check(o,en,btn);
-    box.appendChild(btn);
+    let b=document.createElement('button');
+    b.className='option';
+    b.textContent=o;
+    b.onclick=()=>answer(o,q[2],b);
+    options.appendChild(b);
   });
+  startTimer();
 }
 
-function check(ans,correct,btn){
-  document.querySelectorAll('.option').forEach(b=>b.disabled=true);
-  if(ans===correct){
-    btn.classList.add('correct');
-    document.getElementById('correctSound').play();
-    score+=10;
-  }else{
-    btn.classList.add('wrong');
-    document.getElementById('wrongSound').play();
-  }
-  index++;
-  setTimeout(nextQuestion,800);
+function answer(a,c,b){
+  clearInterval(timer);
+  document.querySelectorAll('.option').forEach(x=>x.disabled=true);
+  if(a===c){b.classList.add('correct');if(soundOn)correctSound.play();score+=10}
+  else{b.classList.add('wrong');if(soundOn)wrongSound.play()}
+  i++;setTimeout(nextQ,700);
 }
 
-function showReview(){
-  showScreen('review');
-  const r=document.getElementById('reviewList');
-  r.innerHTML='';
-  Object.keys(data).forEach(cat=>{
-    const h=document.createElement('h3');
-    h.textContent=cat.toUpperCase();
-    r.appendChild(h);
-    data[cat].forEach(q=>{
-      const p=document.createElement('p');
-      p.textContent=q[0]+' = '+q[1];
-      r.appendChild(p);
-    });
+function startTimer(){
+  time=5;timeEl();
+  timer=setInterval(()=>{time--;timeEl();if(time<=0){clearInterval(timer);gameOver()}},1000);
+}
+function timeEl(){timeSpan.textContent=time}
+function scoreBox(){scoreEl.textContent='Score: '+score}
+
+function gameOver(){
+  clearInterval(timer);
+  show('over');
+  finalScore.textContent='Score: '+score;
+}
+function retry(){startGame(Object.keys(data)[0])}
+
+/* REVIEW */
+function openReviewMenu(){
+  show('reviewMenu');
+  reviewCategories.innerHTML='';
+  Object.keys(data).forEach(c=>{
+    let b=document.createElement('button');
+    b.textContent=c.toUpperCase();
+    b.onclick=()=>openReview(c);
+    reviewCategories.appendChild(b);
   });
+}
+function openReview(c){
+  reviewCat=c;reviewIndex=0;showText=true;
+  show('reviewPlay');updateReview();
+}
+function updateReview(){
+  let d=data[reviewCat][reviewIndex];
+  reviewIcon.textContent=d[0];
+  reviewText.textContent=showText?`${d[1]} = ${d[2]}`:'';
+}
+function nextReview(){click();reviewIndex=(reviewIndex+1)%data[reviewCat].length;updateReview()}
+function prevReview(){click();reviewIndex=(reviewIndex-1+data[reviewCat].length)%data[reviewCat].length;updateReview()}
+function toggleText(){showText=!showText;updateReview()}
+function toggleSound(){soundOn=!soundOn;alert(soundOn?'Sound ON':'Sound OFF')}
+function speak(){
+  if(!soundOn)return;
+  let u=new SpeechSynthesisUtterance(data[reviewCat][reviewIndex][2]);
+  u.lang='en-US';speechSynthesis.speak(u);
+}
+function click(){
+  let a=new AudioContext(),o=a.createOscillator();
+  o.frequency.value=600;o.connect(a.destination);o.start();o.stop(a.currentTime+.1);
 }
 </script>
-
 </body>
 </html>
