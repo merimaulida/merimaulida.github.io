@@ -5,117 +5,178 @@
 <title>Games to Learn English</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
+*{box-sizing:border-box}
 body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:linear-gradient(135deg,#4facfe,#00f2fe);
-  color:white;
-  min-height:100vh;
-  text-align:center;
+ margin:0;
+ font-family:Arial,Helvetica,sans-serif;
+ background:linear-gradient(135deg,#00c6ff,#0072ff);
+ color:#fff;
+ min-height:100vh;
 }
 .screen{display:none;padding:20px}
 .active{display:block}
-button{
-  padding:12px 18px;
-  margin:8px;
-  border:none;
-  border-radius:14px;
-  font-weight:bold;
-  cursor:pointer;
-  background:#fff;
-  color:#333;
-}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
-  gap:10px;
-}
+.center{text-align:center}
+
 .card{
-  background:rgba(255,255,255,.25);
-  border-radius:20px;
-  padding:20px;
-  width:85%;
-  margin:20px auto;
+ background:rgba(255,255,255,.15);
+ border-radius:20px;
+ padding:20px;
+ max-width:500px;
+ margin:20px auto;
+ backdrop-filter:blur(10px);
+ box-shadow:0 10px 30px rgba(0,0,0,.3);
 }
-.big{font-size:90px}
-.timer{font-size:22px}
-.option{width:80%;margin:6px auto}
-.correct{background:#2ecc71;color:white}
-.wrong{background:#e74c3c;color:white}
+
+.btn{
+ width:100%;
+ padding:14px;
+ margin:8px 0;
+ border:none;
+ border-radius:16px;
+ font-size:16px;
+ font-weight:bold;
+ cursor:pointer;
+ background:#fff;
+ color:#0072ff;
+}
+.btn.alt{
+ background:#222;
+ color:#fff;
+}
+
+.grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+ gap:10px;
+ max-width:600px;
+ margin:auto;
+}
+
+.option{
+ background:#fff;
+ color:#0072ff;
+ padding:12px;
+ border-radius:14px;
+ margin:6px auto;
+ max-width:500px;
+ cursor:pointer;
+ font-weight:bold;
+}
+.correct{background:#2ecc71;color:#000;animation:pulse .4s}
+.wrong{background:#e74c3c;color:#fff;animation:shake .3s}
+
+@keyframes pulse{
+ 0%{transform:scale(1)}
+ 50%{transform:scale(1.05)}
+ 100%{transform:scale(1)}
+}
+@keyframes shake{
+ 0%{transform:translateX(0)}
+ 25%{transform:translateX(-5px)}
+ 50%{transform:translateX(5px)}
+ 100%{transform:translateX(0)}
+}
+
+.timer{
+ font-size:20px;
+ font-weight:bold;
+}
+.big{font-size:80px}
+.topbar{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ max-width:500px;
+ margin:auto;
+}
 </style>
 </head>
 
 <body>
 
-<div id="home" class="screen active">
+<!-- HOME -->
+<div id="home" class="screen active center">
+ <div class="card">
   <h1>🎮 Games to Learn English</h1>
-  <button onclick="openCategories()">Start Game</button>
-  <button onclick="openReviewMenu()">Review Mode</button>
+  <p>Learn English with fun game</p>
+  <button class="btn" onclick="openCategories()">▶ Start</button>
+  <button class="btn alt" onclick="openReviewMenu()">📘 Review</button>
+ </div>
 </div>
 
+<!-- CATEGORY -->
 <div id="categories" class="screen">
-  <h2>Select Category</h2>
-  <div id="categoryList" class="grid"></div>
-  <button onclick="goHome()">⬅ Back</button>
+ <h2 class="center">Choose Category</h2>
+ <div id="categoryList" class="grid"></div>
+ <button class="btn alt" onclick="goHome()">⬅ Back</button>
 </div>
 
+<!-- GAME -->
 <div id="game" class="screen">
-  <div class="timer">⏱ <span id="time">5</span></div>
-  <div class="card">
-    <div id="icon" class="big"></div>
-    <h2 id="question"></h2>
-  </div>
-  <div id="options"></div>
-  <h3 id="score"></h3>
+ <div class="topbar">
+  <div class="timer">⏱ <span id="time">10</span></div>
+  <div id="score">Score: 0</div>
+ </div>
+ <div class="card center">
+  <div id="icon" class="big"></div>
+  <h2 id="question"></h2>
+ </div>
+ <div id="options"></div>
 </div>
 
-<div id="over" class="screen">
+<!-- GAME OVER -->
+<div id="over" class="screen center">
+ <div class="card">
   <h1>Game Over</h1>
   <h2 id="finalScore"></h2>
-  <button onclick="retry()">Retry</button>
-  <button onclick="goHome()">Home</button>
+  <button class="btn" onclick="retry()">Retry</button>
+  <button class="btn alt" onclick="goHome()">Home</button>
+ </div>
 </div>
 
+<!-- REVIEW MENU -->
 <div id="reviewMenu" class="screen">
-  <h2>Review Mode</h2>
-  <div id="reviewCategories" class="grid"></div>
-  <button onclick="goHome()">⬅ Back</button>
+ <h2 class="center">Review Category</h2>
+ <div id="reviewCategories" class="grid"></div>
+ <button class="btn alt" onclick="goHome()">⬅ Back</button>
 </div>
 
-<div id="reviewPlay" class="screen">
-  <button onclick="openReviewMenu()">⬅</button>
-  <div class="card">
-    <div id="reviewIcon" class="big"></div>
-    <h2 id="reviewText"></h2>
-  </div>
-  <button onclick="prevReview()">⬅</button>
-  <button onclick="nextReview()">➡</button><br><br>
-  <button onclick="toggleText()">TEXT</button>
-  <button onclick="speak()">🔊</button>
+<!-- REVIEW -->
+<div id="reviewPlay" class="screen center">
+ <div class="card">
+  <div id="reviewIcon" class="big"></div>
+  <h2 id="reviewText"></h2>
+  <button class="btn" onclick="speak()">🔊 Sound</button>
+ </div>
+ <button class="btn alt" onclick="prevReview()">⬅</button>
+ <button class="btn alt" onclick="nextReview()">➡</button>
 </div>
 
-<audio id="correctSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5c6c8f36fa.mp3"></audio>
-<audio id="wrongSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_3a3d6c6aef.mp3"></audio>
+<audio id="correctSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_5c6c8f36fa.mp3"></audio>
+<audio id="wrongSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_3a3d6c6aef.mp3"></audio>
 
 <script>
-const optionsBox=document.getElementById("options");
-const timeEl=document.getElementById("time");
-const scoreEl=document.getElementById("score");
+const categories=[
+"animals","food","clothes","jobs","sports","personal","transport","home",
+"computer","nature","buildings","subjects","music","body","hospital",
+"garden","countries","kitchen","bathroom","places","things","letters",
+"colors","numbers","vehicles"
+];
 
-/* ================= DATA 22 CATEGORIES ================= */
-const data={
-animals:[['🐱','kucing','Cat'],['🐶','anjing','Dog'],['🐮','sapi','Cow'],['🐟','ikan','Fish'],['🐦','burung','Bird'],['🐴','kuda','Horse'],['🐔','ayam','Chicken'],['🦆','bebek','Duck'],['🐍','ular','Snake'],['🦁','singa','Lion'],['🐘','gajah','Elephant'],['🐯','harimau','Tiger'],['🐵','monyet','Monkey'],['🐐','kambing','Goat'],['🐰','kelinci','Rabbit']],
-numbers:[['1️⃣','satu','One'],['2️⃣','dua','Two'],['3️⃣','tiga','Three'],['4️⃣','empat','Four'],['5️⃣','lima','Five'],['6️⃣','enam','Six'],['7️⃣','tujuh','Seven'],['8️⃣','delapan','Eight'],['9️⃣','sembilan','Nine'],['🔟','sepuluh','Ten'],['11','sebelas','Eleven'],['12','dua belas','Twelve'],['13','tiga belas','Thirteen'],['14','empat belas','Fourteen'],['15','lima belas','Fifteen']],
-food:[['🍚','nasi','Rice'],['🍞','roti','Bread'],['🍎','apel','Apple'],['🍌','pisang','Banana'],['🥛','susu','Milk'],['🍗','ayam','Chicken'],['🍖','daging','Meat'],['🥚','telur','Egg'],['🍜','mie','Noodles'],['🍰','kue','Cake'],['🍲','sup','Soup'],['🧀','keju','Cheese'],['🍊','jeruk','Orange'],['🍦','es krim','Ice Cream'],['🐟','ikan','Fish']],
-sports:[['⚽','sepak bola','Football'],['🏀','bola basket','Basketball'],['🏸','bulu tangkis','Badminton'],['🎾','tenis','Tennis'],['🏐','voli','Volleyball'],['🏓','pingpong','Table Tennis'],['🥊','tinju','Boxing'],['🏊','renang','Swimming'],['🚴','bersepeda','Cycling'],['🏃','lari','Running'],['⛹️','lompat','Jump'],['🤼','gulat','Wrestling'],['🏹','panahan','Archery'],['🏄','selancar','Surfing'],['🧗','panjat','Climbing']],
-jobs:[['👮','polisi','Police'],['👩‍🏫','guru','Teacher'],['👨‍⚕️','dokter','Doctor'],['👨‍🍳','koki','Chef'],['👩‍⚖️','hakim','Judge'],['👨‍🔧','montir','Mechanic'],['👩‍💻','programmer','Programmer'],['👨‍🌾','petani','Farmer'],['👨‍✈️','pilot','Pilot'],['👩‍✈️','pramugari','Flight Attendant'],['👷','tukang','Builder'],['👨‍🚒','pemadam','Firefighter'],['👩‍🎤','penyanyi','Singer'],['👨‍🎨','pelukis','Painter'],['🧑‍💼','karyawan','Employee']],
-transport:[['🚗','mobil','Car'],['🚌','bus','Bus'],['🚲','sepeda','Bicycle'],['🏍️','motor','Motorcycle'],['🚆','kereta','Train'],['✈️','pesawat','Airplane'],['🚢','kapal','Ship'],['🚕','taksi','Taxi'],['🚑','ambulans','Ambulance'],['🚒','pemadam','Fire Truck'],['🚜','traktor','Tractor'],['🚓','polisi','Police Car'],['🚁','helikopter','Helicopter'],['🛴','skuter','Scooter'],['🚛','truk','Truck']],
-body:[['👀','mata','Eye'],['👃','hidung','Nose'],['👂','telinga','Ear'],['👄','mulut','Mouth'],['🦷','gigi','Tooth'],['🦵','kaki','Leg'],['🦶','telapak kaki','Foot'],['🖐️','tangan','Hand'],['🧠','otak','Brain'],['❤️','jantung','Heart'],['🩸','darah','Blood'],['🫁','paru-paru','Lung'],['🦴','tulang','Bone'],['👅','lidah','Tongue'],['👤','kepala','Head']]
-};
+const data={};
+categories.forEach(c=>{
+ data[c]=[
+  ["🐱","kucing","cat"],["🐶","anjing","dog"],["🚗","mobil","car"],
+  ["🏠","rumah","house"],["🍎","apel","apple"],["👕","baju","shirt"],
+  ["⚽","sepak bola","football"],["🎵","musik","music"],
+  ["🧠","otak","brain"],["🏥","rumah sakit","hospital"],
+  ["🌳","pohon","tree"],["📚","buku","book"],
+  ["🔢","angka","number"],["🎨","warna","color"],["🔤","huruf","letter"]
+ ];
+});
 
-/* ===== GAME ENGINE (TIDAK DIUBAH) ===== */
-let questions=[],index=0,score=0,time=5,timer;
-let reviewCat='',reviewIndex=0,showText=true;
+let questions=[],index=0,score=0,time=10,timer;
+let reviewCat="",reviewIndex=0;
 
 function show(id){
  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -125,9 +186,10 @@ function goHome(){clearInterval(timer);show('home');}
 
 function openCategories(){
  show('categories');
- categoryList.innerHTML='';
- Object.keys(data).forEach(c=>{
-  let b=document.createElement('button');
+ categoryList.innerHTML="";
+ categories.forEach(c=>{
+  let b=document.createElement("button");
+  b.className="btn";
   b.textContent=c.toUpperCase();
   b.onclick=()=>startGame(c);
   categoryList.appendChild(b);
@@ -142,86 +204,97 @@ function startGame(c){
 }
 
 function nextQuestion(){
- if(index>=questions.length){gameOver();return;}
+ if(index>=questions.length){endGame();return;}
  let q=questions[index];
  icon.textContent=q[0];
  question.textContent=`Apa bahasa Inggris dari "${q[1]}"?`;
- scoreEl.textContent='Score: '+score;
+ scoreEl.textContent="Score: "+score;
+ options.innerHTML="";
 
- let opts=[q[2]];
- while(opts.length<4){
+ let answers=[q[2]];
+ while(answers.length<4){
   let r=questions[Math.random()*questions.length|0][2];
-  if(!opts.includes(r))opts.push(r);
+  if(!answers.includes(r))answers.push(r);
  }
- opts.sort(()=>Math.random()-.5);
+ answers.sort(()=>Math.random()-.5);
 
- optionsBox.innerHTML='';
- opts.forEach(o=>{
-  let b=document.createElement('button');
-  b.className='option';
-  b.textContent=o;
-  b.onclick=()=>answer(o,q[2],b);
-  optionsBox.appendChild(b);
+ answers.forEach(a=>{
+  let o=document.createElement("div");
+  o.className="option";
+  o.textContent=a;
+  o.onclick=()=>checkAnswer(a,q[2],o);
+  options.appendChild(o);
  });
 
  startTimer();
 }
 
-function answer(a,c,b){
+function checkAnswer(a,c,el){
  clearInterval(timer);
- document.querySelectorAll('.option').forEach(x=>x.disabled=true);
- if(a===c){b.classList.add('correct');correctSound.play();score+=10;}
- else{b.classList.add('wrong');wrongSound.play();}
+ document.querySelectorAll('.option').forEach(o=>o.style.pointerEvents="none");
+ if(a===c){
+  el.classList.add("correct");
+  correctSound.play();
+  score+=10;
+ }else{
+  el.classList.add("wrong");
+  wrongSound.play();
+ }
  index++;
- setTimeout(nextQuestion,700);
+ setTimeout(nextQuestion,800);
 }
 
 function startTimer(){
- time=5;
- timeEl.textContent=time;
+ time=10;timeEl.textContent=time;
  timer=setInterval(()=>{
-  time--;
-  timeEl.textContent=time;
-  if(time<=0){clearInterval(timer);gameOver();}
+  time--;timeEl.textContent=time;
+  if(time<=0){clearInterval(timer);endGame();}
  },1000);
 }
 
-function gameOver(){
- clearInterval(timer);
- finalScore.textContent='Score: '+score;
+function endGame(){
+ finalScore.textContent="Score: "+score;
  show('over');
 }
+function retry(){openCategories();}
 
-function retry(){startGame(Object.keys(data)[0]);}
-
-/* ===== REVIEW ===== */
+/* REVIEW */
 function openReviewMenu(){
  show('reviewMenu');
- reviewCategories.innerHTML='';
- Object.keys(data).forEach(c=>{
-  let b=document.createElement('button');
+ reviewCategories.innerHTML="";
+ categories.forEach(c=>{
+  let b=document.createElement("button");
+  b.className="btn";
   b.textContent=c.toUpperCase();
   b.onclick=()=>openReview(c);
   reviewCategories.appendChild(b);
  });
 }
-
 function openReview(c){
- reviewCat=c;reviewIndex=0;showText=true;
- show('reviewPlay');updateReview();
+ reviewCat=c;
+ reviewIndex=0;
+ show('reviewPlay');
+ updateReview();
 }
 function updateReview(){
- let d=data[reviewCat][reviewIndex];
- reviewIcon.textContent=d[0];
- reviewText.textContent=showText?`${d[1]} = ${d[2]}`:'';
+ let r=data[reviewCat][reviewIndex];
+ reviewIcon.textContent=r[0];
+ reviewText.textContent=`${r[1]} = ${r[2]}`;
 }
-function nextReview(){reviewIndex=(reviewIndex+1)%data[reviewCat].length;updateReview();}
-function prevReview(){reviewIndex=(reviewIndex-1+data[reviewCat].length)%data[reviewCat].length;updateReview();}
-function toggleText(){showText=!showText;updateReview();}
+function nextReview(){
+ reviewIndex=(reviewIndex+1)%data[reviewCat].length;
+ updateReview();
+}
+function prevReview(){
+ reviewIndex=(reviewIndex-1+data[reviewCat].length)%data[reviewCat].length;
+ updateReview();
+}
 function speak(){
  let u=new SpeechSynthesisUtterance(data[reviewCat][reviewIndex][2]);
- u.lang='en-US';speechSynthesis.speak(u);
+ u.lang="en-US";
+ speechSynthesis.speak(u);
 }
 </script>
+
 </body>
 </html>
