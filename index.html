@@ -1,282 +1,226 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>English Word Game</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Games to Learn English</title>
 
 <style>
-body{
-  margin:0;
-  font-family:Segoe UI,Arial,sans-serif;
-  background:linear-gradient(135deg,#141e30,#243b55);
-  color:white;
-  text-align:center;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#4facfe,#00f2fe);
+  min-height: 100vh;
+  color: #fff;
 }
-.page{display:none}
-.page.active{display:block}
-button{
-  padding:12px 22px;
-  margin:6px;
-  border:none;
-  border-radius:14px;
-  font-size:15px;
-  cursor:pointer;
-  background:#ffcc00;
-  color:#333;
+
+.screen {
+  display: none;
+  padding: 20px;
+  text-align: center;
 }
-button:hover{transform:scale(1.05)}
-.answer{
-  display:block;
-  margin:8px auto;
-  width:240px;
-  background:white;
-  color:#333;
+
+.active {
+  display: block;
 }
-.correct{background:#4caf50!important;color:white}
-.wrong{background:#e53935!important;color:white}
-.top{
-  display:flex;
-  justify-content:space-between;
-  padding:10px 20px;
+
+h1,h2 {
+  margin-bottom: 15px;
 }
-.big{
-  font-size:90px;
-  animation:pop .4s ease;
+
+button {
+  padding: 12px 18px;
+  margin: 8px;
+  border: none;
+  border-radius: 10px;
+  background: #fff;
+  color: #333;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
 }
-@keyframes pop{
-  from{transform:scale(.5);opacity:0}
-  to{transform:scale(1);opacity:1}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(140px,1fr));
+  gap: 12px;
+}
+
+.option {
+  display: block;
+  margin: 10px auto;
+  width: 80%;
+}
+
+.correct {
+  background: #2ecc71 !important;
+  color: #fff;
+}
+
+.wrong {
+  background: #e74c3c !important;
+  color: #fff;
+}
+
+.fade {
+  animation: fade 0.4s;
+}
+
+@keyframes fade {
+  from {opacity:0; transform:scale(0.9);}
+  to {opacity:1; transform:scale(1);}
+}
+
+.score {
+  font-size: 20px;
+  margin-top: 10px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- MENU -->
-<div id="menu" class="page active">
-  <h1>🎮 Games to Learn English</h1>
-  <button onclick="show('level')">Monster Vocab</button>
-  <button onclick="openReviewMenu()">Review</button>
+<div id="home" class="screen active">
+  <h1>🎮 English Word Game</h1>
+  <button onclick="showCategories()">Start Game</button>
+  <button onclick="showReview()">Review Mode</button>
 </div>
 
-<!-- LEVEL -->
-<div id="level" class="page">
-  <h2>Select Level</h2>
-  <button onclick="selectLevel(7)">Easy</button>
-  <button onclick="selectLevel(5)">Medium</button>
-  <button onclick="selectLevel(3)">Hard</button>
-  <br><br>
-  <button onclick="show('menu')">⬅ Back</button>
-</div>
-
-<!-- CATEGORY -->
-<div id="category" class="page">
+<div id="categories" class="screen">
   <h2>Select Category</h2>
-  <div id="categoryButtons"></div>
-  <br>
-  <button onclick="show('level')">⬅ Back</button>
+  <div id="categoryList" class="category-grid"></div>
+  <button onclick="goHome()">⬅ Back</button>
 </div>
 
-<!-- GAME -->
-<div id="game" class="page">
-  <div class="top">
-    <span id="timer"></span>
-    <button onclick="toggleSound()">🔊</button>
-    <span id="score"></span>
-  </div>
-  <div id="icon" class="big"></div>
+<div id="game" class="screen">
   <h2 id="question"></h2>
-  <div id="answers"></div>
+  <div id="options"></div>
+  <div class="score" id="score"></div>
 </div>
 
-<!-- GAME OVER -->
-<div id="over" class="page">
-  <h1>Game Over</h1>
-  <h2 id="finalScore"></h2>
-  <button onclick="retry()">Retry</button>
-  <button onclick="show('menu')">Menu</button>
+<div id="review" class="screen">
+  <h2>📘 Review Mode</h2>
+  <div id="reviewList"></div>
+  <button onclick="goHome()">⬅ Back</button>
 </div>
 
-<!-- REVIEW MENU -->
-<div id="reviewMenu" class="page">
-  <h2>Select Content</h2>
-  <div id="reviewButtons"></div>
-  <br>
-  <button onclick="show('menu')">⬅ Back</button>
-</div>
-
-<!-- REVIEW -->
-<div id="review" class="page">
-  <div class="top">
-    <button onclick="show('reviewMenu')">⬅</button>
-    <button onclick="toggleSound()">🔊</button>
-  </div>
-  <button onclick="prevReview()">⬅</button>
-  <button onclick="nextReview()">➡</button>
-  <div id="reviewIcon" class="big"></div>
-  <h2 id="reviewText"></h2>
-  <button onclick="toggleText()">Text ON/OFF</button>
-  <button onclick="speak()">🔊 Speak</button>
-</div>
+<!-- SOUND -->
+<audio id="correctSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5c6c8f36fa.mp3"></audio>
+<audio id="wrongSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_3a3d6c6aef.mp3"></audio>
 
 <script>
-function show(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+/* ===================== DATA ===================== */
+function make(list){
+  while(list.length < 15) list.push(list[Math.floor(Math.random()*list.length)]);
+  return list;
+}
+
+const data = {
+animals: make([['kucing','Cat'],['anjing','Dog'],['sapi','Cow'],['ikan','Fish'],['burung','Bird'],['kuda','Horse'],['ayam','Chicken'],['bebek','Duck'],['ular','Snake'],['singa','Lion'],['gajah','Elephant'],['harimau','Tiger'],['monyet','Monkey'],['kambing','Goat'],['kelinci','Rabbit']]),
+food: make([['nasi','Rice'],['apel','Apple'],['roti','Bread'],['ayam','Chicken'],['susu','Milk'],['keju','Cheese'],['pisang','Banana'],['jeruk','Orange'],['telur','Egg'],['daging','Meat'],['kue','Cake'],['sup','Soup'],['mie','Noodles'],['ikan','Fish'],['es krim','Ice Cream']]),
+sports: make([['sepak bola','Football'],['basket','Basketball'],['voli','Volleyball'],['tenis','Tennis'],['lari','Running'],['renang','Swimming'],['badminton','Badminton'],['tinju','Boxing'],['golf','Golf'],['panahan','Archery'],['bersepeda','Cycling'],['selancar','Surfing'],['angkat beban','Weightlifting'],['ski','Skiing'],['yoga','Yoga']]),
+jobs: make([['dokter','Doctor'],['guru','Teacher'],['polisi','Police'],['petani','Farmer'],['pilot','Pilot'],['perawat','Nurse'],['koki','Chef'],['tentara','Soldier'],['arsitek','Architect'],['penyanyi','Singer'],['aktor','Actor'],['penulis','Writer'],['pelukis','Painter'],['montir','Mechanic'],['nelayan','Fisherman']]),
+transport: make([['mobil','Car'],['motor','Motorcycle'],['bus','Bus'],['kereta','Train'],['pesawat','Airplane'],['kapal','Ship'],['sepeda','Bicycle'],['taksi','Taxi'],['ambulans','Ambulance'],['truk','Truck'],['perahu','Boat'],['helikopter','Helicopter'],['metro','Metro'],['skuter','Scooter'],['becak','Rickshaw']]),
+body: make([['kepala','Head'],['mata','Eyes'],['hidung','Nose'],['mulut','Mouth'],['telinga','Ears'],['tangan','Hands'],['kaki','Feet'],['lengan','Arms'],['jari','Fingers'],['rambut','Hair'],['gigi','Teeth'],['lidah','Tongue'],['leher','Neck'],['bahu','Shoulder'],['perut','Stomach']]),
+colors: make([['merah','Red'],['biru','Blue'],['kuning','Yellow'],['hijau','Green'],['hitam','Black'],['putih','White'],['ungu','Purple'],['oranye','Orange'],['coklat','Brown'],['abu-abu','Gray'],['pink','Pink'],['emas','Gold'],['perak','Silver'],['biru muda','Light Blue'],['merah muda','Pink']]),
+numbers: make([['satu','One'],['dua','Two'],['tiga','Three'],['empat','Four'],['lima','Five'],['enam','Six'],['tujuh','Seven'],['delapan','Eight'],['sembilan','Nine'],['sepuluh','Ten'],['sebelas','Eleven'],['dua belas','Twelve'],['tiga belas','Thirteen'],['empat belas','Fourteen'],['lima belas','Fifteen']]),
+home: make([['rumah','House'],['pintu','Door'],['jendela','Window'],['meja','Table'],['kursi','Chair'],['tempat tidur','Bed'],['sofa','Sofa'],['lampu','Lamp'],['lemari','Wardrobe'],['dapur','Kitchen'],['kamar mandi','Bathroom'],['ruang tamu','Living Room'],['garasi','Garage'],['atap','Roof'],['lantai','Floor']]),
+computer: make([['komputer','Computer'],['mouse','Mouse'],['keyboard','Keyboard'],['layar','Monitor'],['printer','Printer'],['internet','Internet'],['folder','Folder'],['file','File'],['email','Email'],['kamera','Camera'],['speaker','Speaker'],['mikrofon','Microphone'],['charger','Charger'],['baterai','Battery'],['wifi','WiFi']]),
+music: make([['musik','Music'],['lagu','Song'],['gitar','Guitar'],['piano','Piano'],['drum','Drum'],['biola','Violin'],['seruling','Flute'],['penyanyi','Singer'],['konser','Concert'],['irama','Rhythm'],['melodi','Melody'],['band','Band'],['orkestra','Orchestra'],['mikrofon','Microphone'],['speaker','Speaker']]),
+hospital: make([['rumah sakit','Hospital'],['dokter','Doctor'],['perawat','Nurse'],['obat','Medicine'],['suntik','Injection'],['ambulans','Ambulance'],['pasien','Patient'],['termometer','Thermometer'],['kursi roda','Wheelchair'],['operasi','Surgery'],['darah','Blood'],['masker','Mask'],['sarung tangan','Gloves'],['infus','IV'],['resepsionis','Receptionist']])
+};
+
+/* ===================== GAME LOGIC ===================== */
+let currentCategory=[], index=0, score=0;
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-/* SOUND */
-let soundOn=true;
-function toggleSound(){soundOn=!soundOn}
-function clickSound(){
-  if(!soundOn) return;
-  const c=new AudioContext();
-  const o=c.createOscillator();
-  o.frequency.value=500;
-  o.connect(c.destination);
-  o.start();
-  o.stop(c.currentTime+.1);
-}
+function goHome(){ showScreen('home'); }
 
-/* DATA 20+ KATEGORI */
-const data={
-animals:make([
-['kucing','Cat','🐱'],['anjing','Dog','🐶'],['sapi','Cow','🐮'],
-['ikan','Fish','🐟'],['burung','Bird','🐦'],['kuda','Horse','🐴'],
-['ayam','Chicken','🐔'],['bebek','Duck','🦆'],['ular','Snake','🐍'],
-['singa','Lion','🦁'],['gajah','Elephant','🐘'],['harimau','Tiger','🐯'],
-['monyet','Monkey','🐒'],['kambing','Goat','🐐'],['kelinci','Rabbit','🐰']
-]),
-food:make([
-['nasi','Rice','🍚'],['apel','Apple','🍎'],['roti','Bread','🍞'],
-['ayam','Chicken','🍗'],['susu','Milk','🥛'],['keju','Cheese','🧀'],
-['pisang','Banana','🍌'],['jeruk','Orange','🍊'],['telur','Egg','🥚'],
-['daging','Meat','🥩'],['kue','Cake','🎂'],['sup','Soup','🍲'],
-['mie','Noodles','🍜'],['es krim','Ice Cream','🍨'],['ikan','Fish','🐟']
-]),
-sports:make([
-['sepak bola','Football','⚽'],['basket','Basketball','🏀'],
-['voli','Volleyball','🏐'],['tenis','Tennis','🎾'],['lari','Running','🏃'],
-['renang','Swimming','🏊'],['bulutangkis','Badminton','🏸'],
-['tinju','Boxing','🥊'],['golf','Golf','⛳'],['panahan','Archery','🏹'],
-['bersepeda','Cycling','🚴'],['selancar','Surfing','🏄'],
-['angkat beban','Weightlifting','🏋️'],['ski','Skiing','🎿'],['yoga','Yoga','🧘']
-]),
-jobs:make([
-['dokter','Doctor','👨‍⚕️'],['guru','Teacher','👩‍🏫'],['polisi','Police','👮'],
-['petani','Farmer','👨‍🌾'],['pilot','Pilot','✈️'],['perawat','Nurse','🧑‍⚕️'],
-['nelayan','Fisherman','🎣'],['koki','Chef','👨‍🍳'],['tentara','Soldier','🪖'],
-['arsitek','Architect','📐'],['penyanyi','Singer','🎤'],['aktor','Actor','🎬'],
-['penulis','Writer','✍️'],['pelukis','Painter','🎨'],['montir','Mechanic','🔧']
-]),
-transport:make([
-['mobil','Car','🚗'],['motor','Motorcycle','🏍️'],['bus','Bus','🚌'],
-['kereta','Train','🚆'],['pesawat','Airplane','✈️'],['kapal','Ship','🚢'],
-['sepeda','Bicycle','🚲'],['taksi','Taxi','🚕'],['ambulans','Ambulance','🚑'],
-['truk','Truck','🚚'],['perahu','Boat','🚤'],['helikopter','Helicopter','🚁'],
-['skuter','Scooter','🛵'],['metro','Metro','🚇'],['becak','Rickshaw','🛺']
-]),
-body:make([
-['kepala','Head','🧠'],['mata','Eyes','👀'],['hidung','Nose','👃'],
-['mulut','Mouth','👄'],['telinga','Ears','👂'],['tangan','Hands','✋'],
-['kaki','Feet','🦶'],['lengan','Arms','💪'],['jari','Fingers','☝️'],
-['rambut','Hair','💇'],['gigi','Teeth','🦷'],['lidah','Tongue','👅'],
-['leher','Neck','🧣'],['bahu','Shoulder','🧍'],['perut','Stomach','🤰']
-]),
-colors:make([
-['merah','Red','🟥'],['biru','Blue','🟦'],['kuning','Yellow','🟨'],
-['hijau','Green','🟩'],['hitam','Black','⬛'],['putih','White','⬜'],
-['ungu','Purple','🟪'],['oranye','Orange','🟧'],['coklat','Brown','🟫'],
-['abu-abu','Gray','⚪'],['pink','Pink','🌸'],['emas','Gold','🥇'],
-['perak','Silver','🥈'],['biru muda','Light Blue','💠'],['merah muda','Light Red','🌷']
-]),
-numbers:make([
-['satu','One','1️⃣'],['dua','Two','2️⃣'],['tiga','Three','3️⃣'],
-['empat','Four','4️⃣'],['lima','Five','5️⃣'],['enam','Six','6️⃣'],
-['tujuh','Seven','7️⃣'],['delapan','Eight','8️⃣'],['sembilan','Nine','9️⃣'],
-['sepuluh','Ten','🔟'],['sebelas','Eleven','🔢'],['dua belas','Twelve','🔢'],
-['tiga belas','Thirteen','🔢'],['empat belas','Fourteen','🔢'],['lima belas','Fifteen','🔢']
-])
-};
-
-/* UTIL */
-function make(a){return a.map(x=>({id:x[0],en:x[1],icon:x[2]}))}
-function shuffle(a){return a.sort(()=>Math.random()-.5)}
-
-/* GAME */
-let levelTime=5,category='',list=[],i=0,score=0;
-function selectLevel(t){levelTime=t;openCategory()}
-function openCategory(){
-  show('category');
-  categoryButtons.innerHTML='';
-  for(let c in data){
-    let b=document.createElement('button');
-    b.textContent=c.toUpperCase();
-    b.onclick=()=>startGame(c);
-    categoryButtons.appendChild(b);
-  }
-}
-function startGame(cat){
-  category=cat;
-  list=shuffle([...data[cat]]);
-  i=0;score=0;
-  show('game');
-  nextQuestion();
-}
-function nextQuestion(){
-  if(i>=list.length){endGame();return}
-  let q=list[i];
-  icon.innerText=q.icon;
-  question.innerText=`Apa bahasa Inggris dari "${q.id}"?`;
-  answers.innerHTML='';
-  let opts=shuffle([q.en,...shuffle(list).slice(0,3).map(x=>x.en)]);
-  opts.forEach(o=>{
-    let b=document.createElement('button');
-    b.className='answer';
-    b.textContent=o;
-    b.onclick=()=>{
-      clickSound();
-      if(o===q.en){b.classList.add('correct');score++}
-      else{b.classList.add('wrong')}
-      setTimeout(()=>{i++;nextQuestion()},400);
-    };
-    answers.appendChild(b);
+function showCategories(){
+  showScreen('categories');
+  const list=document.getElementById('categoryList');
+  list.innerHTML='';
+  Object.keys(data).forEach(cat=>{
+    const b=document.createElement('button');
+    b.textContent=cat.toUpperCase();
+    b.onclick=()=>startGame(cat);
+    list.appendChild(b);
   });
 }
-function endGame(){
-  finalScore.innerText=`Category: ${category.toUpperCase()} | Score ${score}/${list.length}`;
-  show('over');
-}
-function retry(){startGame(category)}
 
-/* REVIEW */
-let rcat='',rindex=0,showText=true;
-function openReviewMenu(){
-  show('reviewMenu');
-  reviewButtons.innerHTML='';
-  for(let c in data){
-    let b=document.createElement('button');
-    b.textContent=c;
-    b.onclick=()=>openReview(c);
-    reviewButtons.appendChild(b);
+function startGame(cat){
+  currentCategory=[...data[cat]];
+  index=0; score=0;
+  showScreen('game');
+  nextQuestion();
+}
+
+function nextQuestion(){
+  if(index>=currentCategory.length){
+    document.getElementById('question').textContent='Game Finished!';
+    document.getElementById('options').innerHTML='';
+    document.getElementById('score').textContent='Score: '+score;
+    return;
   }
+
+  const [id,en]=currentCategory[index];
+  document.getElementById('question').textContent='Apa bahasa Inggris dari "'+id+'"?';
+  document.getElementById('score').textContent='Score: '+score;
+
+  const opts=[en];
+  while(opts.length<4){
+    const r=currentCategory[Math.floor(Math.random()*currentCategory.length)][1];
+    if(!opts.includes(r)) opts.push(r);
+  }
+  opts.sort(()=>Math.random()-0.5);
+
+  const box=document.getElementById('options');
+  box.innerHTML='';
+  opts.forEach(o=>{
+    const btn=document.createElement('button');
+    btn.className='option fade';
+    btn.textContent=o;
+    btn.onclick=()=>check(o,en,btn);
+    box.appendChild(btn);
+  });
 }
-function openReview(c){rcat=c;rindex=0;showText=true;show('review');updateReview()}
-function updateReview(){
-  let d=data[rcat][rindex];
-  reviewIcon.innerText=d.icon;
-  reviewText.innerText=showText?`${d.id} = ${d.en}`:'';
+
+function check(ans,correct,btn){
+  document.querySelectorAll('.option').forEach(b=>b.disabled=true);
+  if(ans===correct){
+    btn.classList.add('correct');
+    document.getElementById('correctSound').play();
+    score+=10;
+  }else{
+    btn.classList.add('wrong');
+    document.getElementById('wrongSound').play();
+  }
+  index++;
+  setTimeout(nextQuestion,800);
 }
-function nextReview(){clickSound();rindex=(rindex+1)%data[rcat].length;updateReview()}
-function prevReview(){clickSound();rindex=(rindex-1+data[rcat].length)%data[rcat].length;updateReview()}
-function toggleText(){showText=!showText;updateReview()}
-function speak(){
-  if(!soundOn) return;
-  let d=data[rcat][rindex];
-  let u=new SpeechSynthesisUtterance(d.en);
-  u.lang='en-US';
-  speechSynthesis.speak(u);
+
+function showReview(){
+  showScreen('review');
+  const r=document.getElementById('reviewList');
+  r.innerHTML='';
+  Object.keys(data).forEach(cat=>{
+    const h=document.createElement('h3');
+    h.textContent=cat.toUpperCase();
+    r.appendChild(h);
+    data[cat].forEach(q=>{
+      const p=document.createElement('p');
+      p.textContent=q[0]+' = '+q[1];
+      r.appendChild(p);
+    });
+  });
 }
 </script>
 
