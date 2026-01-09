@@ -1,123 +1,93 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Games to Learn English</title>
+<title>English Learning Game</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-*{box-sizing:border-box}
 body{
  margin:0;
  font-family:Arial,Helvetica,sans-serif;
- background:linear-gradient(135deg,#00c6ff,#0072ff);
- color:#fff;
+ background:linear-gradient(135deg,#4facfe,#00f2fe);
  min-height:100vh;
+ color:#fff;
+ text-align:center;
 }
-.screen{display:none;padding:20px}
-.active{display:block}
-.center{text-align:center}
-
+.hidden{display:none}
+.container{
+ max-width:520px;
+ margin:auto;
+ padding:20px;
+}
 .card{
  background:rgba(255,255,255,.15);
  border-radius:20px;
  padding:20px;
- max-width:500px;
- margin:20px auto;
+ margin-top:20px;
  backdrop-filter:blur(10px);
  box-shadow:0 10px 30px rgba(0,0,0,.3);
 }
-
 .btn{
  width:100%;
  padding:14px;
- margin:8px 0;
  border:none;
  border-radius:16px;
+ margin:8px 0;
  font-size:16px;
  font-weight:bold;
  cursor:pointer;
  background:#fff;
- color:#0072ff;
+ color:#0077ff;
 }
-.btn.alt{
+.btn.dark{
  background:#222;
  color:#fff;
 }
-
 .grid{
  display:grid;
- grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+ grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
  gap:10px;
- max-width:600px;
- margin:auto;
 }
-
 .option{
  background:#fff;
- color:#0072ff;
+ color:#0077ff;
  padding:12px;
  border-radius:14px;
- margin:6px auto;
- max-width:500px;
+ margin:6px 0;
  cursor:pointer;
  font-weight:bold;
 }
-.correct{background:#2ecc71;color:#000;animation:pulse .4s}
-.wrong{background:#e74c3c;color:#fff;animation:shake .3s}
-
-@keyframes pulse{
- 0%{transform:scale(1)}
- 50%{transform:scale(1.05)}
- 100%{transform:scale(1)}
-}
-@keyframes shake{
- 0%{transform:translateX(0)}
- 25%{transform:translateX(-5px)}
- 50%{transform:translateX(5px)}
- 100%{transform:translateX(0)}
-}
-
-.timer{
- font-size:20px;
- font-weight:bold;
-}
+.correct{background:#2ecc71;color:#000}
+.wrong{background:#e74c3c;color:#fff}
+.timer{font-size:18px;font-weight:bold}
 .big{font-size:80px}
-.topbar{
- display:flex;
- justify-content:space-between;
- align-items:center;
- max-width:500px;
- margin:auto;
-}
 </style>
 </head>
 
 <body>
 
+<div class="container">
+
 <!-- HOME -->
-<div id="home" class="screen active center">
+<div id="home">
  <div class="card">
-  <h1>🎮 Games to Learn English</h1>
-  <p>Learn English with fun game</p>
-  <button class="btn" onclick="openCategories()">▶ Start</button>
-  <button class="btn alt" onclick="openReviewMenu()">📘 Review</button>
+  <h1>🎮 English Game</h1>
+  <p>Pilih kategori & jawab soal</p>
+  <button class="btn" onclick="openCategories()">▶ START</button>
  </div>
 </div>
 
 <!-- CATEGORY -->
-<div id="categories" class="screen">
- <h2 class="center">Choose Category</h2>
+<div id="categories" class="hidden">
+ <h2>Pilih Kategori</h2>
  <div id="categoryList" class="grid"></div>
- <button class="btn alt" onclick="goHome()">⬅ Back</button>
+ <button class="btn dark" onclick="goHome()">⬅ Kembali</button>
 </div>
 
 <!-- GAME -->
-<div id="game" class="screen">
- <div class="topbar">
-  <div class="timer">⏱ <span id="time">10</span></div>
-  <div id="score">Score: 0</div>
- </div>
- <div class="card center">
+<div id="game" class="hidden">
+ <div class="timer">⏱ <span id="time">10</span></div>
+ <div class="card">
   <div id="icon" class="big"></div>
   <h2 id="question"></h2>
  </div>
@@ -125,174 +95,162 @@ body{
 </div>
 
 <!-- GAME OVER -->
-<div id="over" class="screen center">
+<div id="over" class="hidden">
  <div class="card">
   <h1>Game Over</h1>
   <h2 id="finalScore"></h2>
-  <button class="btn" onclick="retry()">Retry</button>
-  <button class="btn alt" onclick="goHome()">Home</button>
+  <button class="btn" onclick="openCategories()">Main Lagi</button>
+  <button class="btn dark" onclick="goHome()">Home</button>
  </div>
 </div>
 
-<!-- REVIEW MENU -->
-<div id="reviewMenu" class="screen">
- <h2 class="center">Review Category</h2>
- <div id="reviewCategories" class="grid"></div>
- <button class="btn alt" onclick="goHome()">⬅ Back</button>
-</div>
-
-<!-- REVIEW -->
-<div id="reviewPlay" class="screen center">
- <div class="card">
-  <div id="reviewIcon" class="big"></div>
-  <h2 id="reviewText"></h2>
-  <button class="btn" onclick="speak()">🔊 Sound</button>
- </div>
- <button class="btn alt" onclick="prevReview()">⬅</button>
- <button class="btn alt" onclick="nextReview()">➡</button>
 </div>
 
 <audio id="correctSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_5c6c8f36fa.mp3"></audio>
 <audio id="wrongSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_3a3d6c6aef.mp3"></audio>
 
 <script>
+// ================= DATA =================
 const categories=[
-"animals","food","clothes","jobs","sports","personal","transport","home",
-"computer","nature","buildings","subjects","music","body","hospital",
-"garden","countries","kitchen","bathroom","places","things","letters",
-"colors","numbers","vehicles"
+"animals","food","jobs","sports","transport","home","computer","body",
+"music","colors","numbers","letters","hospital","garden","kitchen",
+"bathroom","countries","places","things","nature","buildings","subjects"
 ];
 
-const data={};
+const data={
+ animals:[
+  ["🐱","kucing","cat"],["🐶","anjing","dog"],["🐮","sapi","cow"],
+  ["🐔","ayam","chicken"],["🐟","ikan","fish"]
+ ],
+ food:[
+  ["🍎","apel","apple"],["🍌","pisang","banana"],["🍞","roti","bread"],
+  ["🍚","nasi","rice"],["🍗","ayam goreng","fried chicken"]
+ ],
+ jobs:[
+  ["👮","polisi","police"],["👨‍⚕️","dokter","doctor"],
+  ["👨‍🏫","guru","teacher"],["👨‍🍳","koki","chef"]
+ ]
+};
+
+// isi kategori lain otomatis biar aman
 categories.forEach(c=>{
- data[c]=[
-  ["🐱","kucing","cat"],["🐶","anjing","dog"],["🚗","mobil","car"],
-  ["🏠","rumah","house"],["🍎","apel","apple"],["👕","baju","shirt"],
-  ["⚽","sepak bola","football"],["🎵","musik","music"],
-  ["🧠","otak","brain"],["🏥","rumah sakit","hospital"],
-  ["🌳","pohon","tree"],["📚","buku","book"],
-  ["🔢","angka","number"],["🎨","warna","color"],["🔤","huruf","letter"]
- ];
+ if(!data[c]){
+  data[c]=[
+   ["❓","contoh","example"],
+   ["⭐","bintang","star"],
+   ["📦","kotak","box"],
+   ["🏠","rumah","house"],
+   ["🚗","mobil","car"]
+  ];
+ }
 });
 
-let questions=[],index=0,score=0,time=10,timer;
-let reviewCat="",reviewIndex=0;
+// ================ GAME LOGIC =================
+let currentQuestions=[];
+let index=0;
+let score=0;
+let timer;
+let time=10;
 
-function show(id){
- document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
- document.getElementById(id).classList.add('active');
+const home=document.getElementById("home");
+const categoriesDiv=document.getElementById("categories");
+const game=document.getElementById("game");
+const over=document.getElementById("over");
+
+function show(el){
+ home.classList.add("hidden");
+ categoriesDiv.classList.add("hidden");
+ game.classList.add("hidden");
+ over.classList.add("hidden");
+ el.classList.remove("hidden");
 }
-function goHome(){clearInterval(timer);show('home');}
+
+function goHome(){clearInterval(timer);show(home);}
 
 function openCategories(){
- show('categories');
- categoryList.innerHTML="";
+ show(categoriesDiv);
+ const list=document.getElementById("categoryList");
+ list.innerHTML="";
  categories.forEach(c=>{
-  let b=document.createElement("button");
+  const b=document.createElement("button");
   b.className="btn";
   b.textContent=c.toUpperCase();
   b.onclick=()=>startGame(c);
-  categoryList.appendChild(b);
+  list.appendChild(b);
  });
 }
 
-function startGame(c){
- questions=[...data[c]];
- index=0;score=0;
- show('game');
+function startGame(cat){
+ currentQuestions=[...data[cat]];
+ index=0;
+ score=0;
+ show(game);
  nextQuestion();
 }
 
 function nextQuestion(){
- if(index>=questions.length){endGame();return;}
- let q=questions[index];
- icon.textContent=q[0];
- question.textContent=`Apa bahasa Inggris dari "${q[1]}"?`;
- scoreEl.textContent="Score: "+score;
- options.innerHTML="";
+ if(index>=currentQuestions.length){
+  endGame();
+  return;
+ }
+ const q=currentQuestions[index];
+ document.getElementById("icon").textContent=q[0];
+ document.getElementById("question").textContent=
+  `Apa bahasa Inggris dari "${q[1]}"?`;
+
+ const optionsDiv=document.getElementById("options");
+ optionsDiv.innerHTML="";
 
  let answers=[q[2]];
  while(answers.length<4){
-  let r=questions[Math.random()*questions.length|0][2];
+  let r=currentQuestions[Math.random()*currentQuestions.length|0][2];
   if(!answers.includes(r))answers.push(r);
  }
  answers.sort(()=>Math.random()-.5);
 
  answers.forEach(a=>{
-  let o=document.createElement("div");
-  o.className="option";
-  o.textContent=a;
-  o.onclick=()=>checkAnswer(a,q[2],o);
-  options.appendChild(o);
+  const div=document.createElement("div");
+  div.className="option";
+  div.textContent=a;
+  div.onclick=()=>checkAnswer(a,q[2],div);
+  optionsDiv.appendChild(div);
  });
 
  startTimer();
 }
 
-function checkAnswer(a,c,el){
+function checkAnswer(ans,correct,el){
  clearInterval(timer);
- document.querySelectorAll('.option').forEach(o=>o.style.pointerEvents="none");
- if(a===c){
+ document.querySelectorAll(".option").forEach(o=>o.style.pointerEvents="none");
+ if(ans===correct){
   el.classList.add("correct");
-  correctSound.play();
+  document.getElementById("correctSound").play();
   score+=10;
  }else{
   el.classList.add("wrong");
-  wrongSound.play();
+  document.getElementById("wrongSound").play();
  }
  index++;
  setTimeout(nextQuestion,800);
 }
 
 function startTimer(){
- time=10;timeEl.textContent=time;
+ time=10;
+ document.getElementById("time").textContent=time;
  timer=setInterval(()=>{
-  time--;timeEl.textContent=time;
-  if(time<=0){clearInterval(timer);endGame();}
+  time--;
+  document.getElementById("time").textContent=time;
+  if(time<=0){
+   clearInterval(timer);
+   index++;
+   nextQuestion();
+  }
  },1000);
 }
 
 function endGame(){
- finalScore.textContent="Score: "+score;
- show('over');
-}
-function retry(){openCategories();}
-
-/* REVIEW */
-function openReviewMenu(){
- show('reviewMenu');
- reviewCategories.innerHTML="";
- categories.forEach(c=>{
-  let b=document.createElement("button");
-  b.className="btn";
-  b.textContent=c.toUpperCase();
-  b.onclick=()=>openReview(c);
-  reviewCategories.appendChild(b);
- });
-}
-function openReview(c){
- reviewCat=c;
- reviewIndex=0;
- show('reviewPlay');
- updateReview();
-}
-function updateReview(){
- let r=data[reviewCat][reviewIndex];
- reviewIcon.textContent=r[0];
- reviewText.textContent=`${r[1]} = ${r[2]}`;
-}
-function nextReview(){
- reviewIndex=(reviewIndex+1)%data[reviewCat].length;
- updateReview();
-}
-function prevReview(){
- reviewIndex=(reviewIndex-1+data[reviewCat].length)%data[reviewCat].length;
- updateReview();
-}
-function speak(){
- let u=new SpeechSynthesisUtterance(data[reviewCat][reviewIndex][2]);
- u.lang="en-US";
- speechSynthesis.speak(u);
+ document.getElementById("finalScore").textContent="Score: "+score;
+ show(over);
 }
 </script>
 
