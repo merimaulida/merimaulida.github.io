@@ -1,64 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
 <meta charset="UTF-8">
 <title>Games to Learn English</title>
 
 <style>
-*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:'Segoe UI',sans-serif;
-  background:linear-gradient(135deg,#141e30,#243b55);
+  font-family:Segoe UI, sans-serif;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
   color:white;
   text-align:center;
 }
 .page{display:none}
 .page.active{display:block}
-h1,h2{margin:10px}
 button{
-  padding:14px 22px;
+  padding:14px 24px;
   margin:6px;
   border:none;
   border-radius:14px;
-  cursor:pointer;
   font-size:16px;
+  cursor:pointer;
   transition:.2s;
 }
 button:hover{transform:scale(1.05)}
 .menu button{background:#ffcc00;color:#333}
-.answer{
-  background:white;
-  color:#333;
-  width:220px;
-}
-.correct{
-  background:#4caf50!important;
-  color:white;
-  animation:pop .3s;
-}
-.wrong{
-  background:#f44336!important;
-  color:white;
-  animation:shake .3s;
-}
-@keyframes pop{
-  0%{transform:scale(1)}
-  50%{transform:scale(1.15)}
-  100%{transform:scale(1)}
-}
-@keyframes shake{
-  0%{transform:translateX(0)}
-  25%{transform:translateX(-6px)}
-  50%{transform:translateX(6px)}
-  75%{transform:translateX(-6px)}
-  100%{transform:translateX(0)}
-}
+.answer{background:white;color:#333;width:220px}
+.correct{background:#4caf50!important;color:white}
+.wrong{background:#f44336!important;color:white}
 .top{
   display:flex;
   justify-content:space-between;
   padding:10px 20px;
 }
+.big{font-size:80px}
 </style>
 </head>
 
@@ -68,23 +43,18 @@ button:hover{transform:scale(1.05)}
 <div id="menu" class="page active">
   <h1>🎮 Games to Learn English</h1>
   <h2>Monster Vocab</h2>
-  <div class="menu">
-    <button onclick="startGame('animals')">Animals</button>
-    <button onclick="startGame('numbers')">Numbers</button>
-    <button onclick="startGame('body')">Body</button>
-    <button onclick="startGame('food')">Food</button>
-    <button onclick="startGame('transport')">Transport</button>
-    <button onclick="startGame('sports')">Sports</button>
-    <button onclick="startGame('home')">Home</button>
-    <button onclick="startGame('music')">Music</button>
-    <button onclick="startGame('computer')">Computer</button>
-    <button onclick="startGame('hospital')">Hospital</button>
-    <button onclick="startGame('garden')">Garden</button>
-    <button onclick="startGame('bathroom')">Bathroom</button>
-    <button onclick="startGame('colors')">Colors</button>
-    <button onclick="startGame('letters')">Letters</button>
-    <button onclick="startGame('school')">School</button>
-  </div>
+  <button onclick="openLevel()">Start Game</button>
+  <button onclick="openReviewMenu()">Review</button>
+</div>
+
+<!-- LEVEL -->
+<div id="level" class="page">
+  <h2>Select Level</h2>
+  <button onclick="startGame('easy')">Easy</button>
+  <button onclick="startGame('medium')">Medium</button>
+  <button onclick="startGame('hard')">Hard</button>
+  <br><br>
+  <button onclick="backMenu()">⬅ Back</button>
 </div>
 
 <!-- GAME -->
@@ -93,107 +63,155 @@ button:hover{transform:scale(1.05)}
     <span id="timer">⏱ 5</span>
     <span id="score">⭐ 0</span>
   </div>
+  <div id="icon" class="big"></div>
   <h2 id="question"></h2>
   <div id="answers"></div>
 </div>
 
 <!-- GAME OVER -->
 <div id="over" class="page">
-  <h1>💀 Game Over</h1>
+  <h1>Game Over</h1>
   <h2 id="finalScore"></h2>
   <button onclick="retry()">Retry</button>
-  <button onclick="goMenu()">Menu</button>
+  <button onclick="backMenu()">Menu</button>
+</div>
+
+<!-- REVIEW MENU -->
+<div id="reviewMenu" class="page">
+  <h2>Select Review</h2>
+  <button onclick="openReview('animals')">Animals</button>
+  <button onclick="openReview('numbers')">Numbers</button>
+  <button onclick="openReview('body')">Body</button>
+  <button onclick="openReview('food')">Food</button>
+  <button onclick="openReview('transport')">Transport</button>
+  <br><br>
+  <button onclick="backMenu()">⬅ Back</button>
+</div>
+
+<!-- REVIEW -->
+<div id="review" class="page">
+  <button onclick="backReview()">⬅</button>
+  <button onclick="nextReview()">➡</button>
+  <div id="reviewIcon" class="big"></div>
+  <h2 id="reviewText"></h2>
+  <button onclick="toggleText()">Text ON / OFF</button>
 </div>
 
 <script>
-/* PAGE CONTROL */
+/* PAGE */
 function show(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-/* SOUND (SAFE) */
-function sound(freq){
-  const ctx=new (window.AudioContext||webkitAudioContext)();
-  const o=ctx.createOscillator();
-  const g=ctx.createGain();
-  o.connect(g);g.connect(ctx.destination);
-  o.frequency.value=freq;
-  g.gain.value=0.15;
+/* SOUND */
+function beep(f){
+  const c=new AudioContext();
+  const o=c.createOscillator();
+  o.frequency.value=f;
+  o.connect(c.destination);
   o.start();
-  o.stop(ctx.currentTime+.2);
+  o.stop(c.currentTime+.15);
 }
 
-/* DATA (15 KATEGORI) */
+/* DATA */
 const data={
-animals:["Cat","Dog","Cow","Horse","Fish","Bird","Lion","Tiger","Monkey","Duck"],
-numbers:["One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten"],
-body:["Eye","Hand","Leg","Foot","Head","Ear","Nose","Mouth","Hair","Finger"],
-food:["Rice","Bread","Milk","Egg","Apple","Banana","Fish","Chicken","Cake","Soup"],
-transport:["Car","Bus","Train","Bike","Plane","Ship","Taxi","Truck","Motorcycle","Boat"],
-sports:["Football","Basketball","Tennis","Badminton","Swimming","Running","Cycling","Boxing","Volleyball","Baseball"],
-home:["Door","Window","Chair","Table","Bed","Sofa","Kitchen","Bathroom","Roof","Floor"],
-music:["Guitar","Piano","Drum","Violin","Song","Singer","Band","Music","Microphone","Speaker"],
-computer:["Keyboard","Mouse","Monitor","CPU","Laptop","Printer","Internet","File","Folder","Screen"],
-hospital:["Doctor","Nurse","Patient","Medicine","Ambulance","Bed","Injection","Hospital","Mask","Thermometer"],
-garden:["Tree","Flower","Grass","Plant","Soil","Leaf","Seed","Water","Shovel","Pot"],
-bathroom:["Toilet","Shower","Soap","Toothbrush","Toothpaste","Towel","Mirror","Sink","Water","Bucket"],
-colors:["Red","Blue","Green","Yellow","Black","White","Pink","Purple","Orange","Brown"],
-letters:["A","B","C","D","E","F","G","H","I","J"],
-school:["Teacher","Student","Book","Pen","Pencil","Eraser","Bag","Classroom","Desk","Board"]
+animals:[
+ {id:'kucing',en:'Cat',icon:'🐱'},
+ {id:'anjing',en:'Dog',icon:'🐶'},
+ {id:'sapi',en:'Cow',icon:'🐮'},
+ {id:'ikan',en:'Fish',icon:'🐟'},
+ {id:'burung',en:'Bird',icon:'🐦'}
+],
+numbers:[
+ {id:'satu',en:'One',icon:'1️⃣'},
+ {id:'dua',en:'Two',icon:'2️⃣'},
+ {id:'tiga',en:'Three',icon:'3️⃣'},
+ {id:'empat',en:'Four',icon:'4️⃣'}
+],
+body:[
+ {id:'mata',en:'Eye',icon:'👁️'},
+ {id:'tangan',en:'Hand',icon:'✋'},
+ {id:'kaki',en:'Foot',icon:'🦶'}
+],
+food:[
+ {id:'nasi',en:'Rice',icon:'🍚'},
+ {id:'apel',en:'Apple',icon:'🍎'},
+ {id:'roti',en:'Bread',icon:'🍞'}
+],
+transport:[
+ {id:'mobil',en:'Car',icon:'🚗'},
+ {id:'pesawat',en:'Plane',icon:'✈️'},
+ {id:'kereta',en:'Train',icon:'🚆'}
+]
 };
 
-let cat="",q=[],i=0,score=0,time=5,timer;
+let level='',list=[],i=0,score=0,time=5,timer;
 
-/* GAME LOGIC */
-function startGame(c){
-  cat=c;
-  q=[...data[c]];
-  shuffle(q);
+/* GAME */
+function openLevel(){show('level')}
+function startGame(lv){
+  level=lv;
+  list=Object.values(data).flat();
+  shuffle(list);
   i=0;score=0;
   show('game');
   load();
 }
-
 function load(){
-  if(i>=q.length){gameOver();return}
+  if(i>=list.length){end();return}
   clearInterval(timer);
   time=5;
-  document.getElementById("timer").innerText="⏱ "+time;
-  document.getElementById("score").innerText="⭐ "+score;
-  const correct=q[i];
-  document.getElementById("question").innerText="Select: "+correct;
-  const ans=document.getElementById("answers");
-  ans.innerHTML="";
-  const opts=shuffle([correct,...shuffle(q).slice(0,3)]);
+  document.getElementById('timer').innerText='⏱ '+time;
+  document.getElementById('score').innerText='⭐ '+score;
+  const q=list[i];
+  document.getElementById('icon').innerText=q.icon;
+  document.getElementById('question').innerText=
+    'Apa bahasa Inggris dari "'+q.id+'" ?';
+  const ans=document.getElementById('answers');
+  ans.innerHTML='';
+  const opts=shuffle([q.en,...shuffle(list).slice(0,3).map(x=>x.en)]);
   opts.forEach(o=>{
-    const b=document.createElement("button");
-    b.className="answer";
+    const b=document.createElement('button');
+    b.className='answer';
     b.innerText=o;
     b.onclick=()=>{
       clearInterval(timer);
-      if(o===correct){
-        score++;b.classList.add("correct");sound(700);
-      }else{
-        b.classList.add("wrong");sound(200);
-      }
+      if(o===q.en){b.classList.add('correct');score++;beep(700);}
+      else{b.classList.add('wrong');beep(200);}
       setTimeout(()=>{i++;load()},400);
     };
     ans.appendChild(b);
   });
   timer=setInterval(()=>{
-    time--;document.getElementById("timer").innerText="⏱ "+time;
-    if(time===0){clearInterval(timer);sound(120);gameOver();}
+    time--;document.getElementById('timer').innerText='⏱ '+time;
+    if(time===0){clearInterval(timer);end()}
   },1000);
 }
-
-function gameOver(){
-  document.getElementById("finalScore").innerText=
-    `Score: ${score} / ${q.length}`;
+function end(){
+  document.getElementById('finalScore').innerText=
+    'Score: '+score+' / '+list.length;
   show('over');
-} 
-function retry(){startGame(cat)}
-function goMenu(){show('menu')}
+}
+function retry(){startGame(level)}
+function backMenu(){show('menu')}
+
+/* REVIEW */
+let rcat='',rindex=0,showText=true;
+function openReviewMenu(){show('reviewMenu')}
+function openReview(c){
+  rcat=c;rindex=0;showText=true;
+  show('review');updateReview();
+}
+function updateReview(){
+  const d=data[rcat][rindex];
+  document.getElementById('reviewIcon').innerText=d.icon;
+  document.getElementById('reviewText').innerText=
+    showText?`${d.id} = ${d.en}`:'';
+}
+function nextReview(){rindex=(rindex+1)%data[rcat].length;updateReview()}
+function backReview(){rindex=(rindex-1+data[rcat].length)%data[rcat].length;updateReview()}
+function toggleText(){showText=!showText;updateReview()}
 
 /* UTIL */
 function shuffle(a){return a.sort(()=>Math.random()-.5)}
