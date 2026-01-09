@@ -2,130 +2,201 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>English Learning Game</title>
+<title>Games to Learn English</title>
 
 <style>
+*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:Arial, sans-serif;
-  background:#1e3c72;
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(135deg,#141e30,#243b55);
   color:white;
   text-align:center;
 }
+.page{display:none}
+.page.active{display:block}
+h1,h2{margin:10px}
 button{
-  padding:12px 20px;
+  padding:14px 22px;
   margin:6px;
   border:none;
-  border-radius:10px;
+  border-radius:14px;
   cursor:pointer;
   font-size:16px;
+  transition:.2s;
 }
+button:hover{transform:scale(1.05)}
 .menu button{background:#ffcc00;color:#333}
-.answer{background:white;color:#333;width:200px}
-.correct{background:#4caf50;color:white}
-.wrong{background:#f44336;color:white}
-.hidden{display:none}
+.answer{
+  background:white;
+  color:#333;
+  width:220px;
+}
+.correct{
+  background:#4caf50!important;
+  color:white;
+  animation:pop .3s;
+}
+.wrong{
+  background:#f44336!important;
+  color:white;
+  animation:shake .3s;
+}
+@keyframes pop{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.15)}
+  100%{transform:scale(1)}
+}
+@keyframes shake{
+  0%{transform:translateX(0)}
+  25%{transform:translateX(-6px)}
+  50%{transform:translateX(6px)}
+  75%{transform:translateX(-6px)}
+  100%{transform:translateX(0)}
+}
+.top{
+  display:flex;
+  justify-content:space-between;
+  padding:10px 20px;
+}
 </style>
 </head>
 
 <body>
 
-<h1>Games to Learn English</h1>
-
-<div id="menu" class="menu">
-  <button onclick="startGame('animals')">Animals</button>
-  <button onclick="startGame('numbers')">Numbers</button>
-  <button onclick="startGame('body')">Body</button>
-  <button onclick="startGame('food')">Food</button>
-  <button onclick="startGame('transport')">Transport</button>
+<!-- MENU -->
+<div id="menu" class="page active">
+  <h1>🎮 Games to Learn English</h1>
+  <h2>Monster Vocab</h2>
+  <div class="menu">
+    <button onclick="startGame('animals')">Animals</button>
+    <button onclick="startGame('numbers')">Numbers</button>
+    <button onclick="startGame('body')">Body</button>
+    <button onclick="startGame('food')">Food</button>
+    <button onclick="startGame('transport')">Transport</button>
+    <button onclick="startGame('sports')">Sports</button>
+    <button onclick="startGame('home')">Home</button>
+    <button onclick="startGame('music')">Music</button>
+    <button onclick="startGame('computer')">Computer</button>
+    <button onclick="startGame('hospital')">Hospital</button>
+    <button onclick="startGame('garden')">Garden</button>
+    <button onclick="startGame('bathroom')">Bathroom</button>
+    <button onclick="startGame('colors')">Colors</button>
+    <button onclick="startGame('letters')">Letters</button>
+    <button onclick="startGame('school')">School</button>
+  </div>
 </div>
 
-<div id="game" class="hidden">
+<!-- GAME -->
+<div id="game" class="page">
+  <div class="top">
+    <span id="timer">⏱ 5</span>
+    <span id="score">⭐ 0</span>
+  </div>
   <h2 id="question"></h2>
   <div id="answers"></div>
-  <p id="info"></p>
-  <button onclick="backMenu()">Back</button>
+</div>
+
+<!-- GAME OVER -->
+<div id="over" class="page">
+  <h1>💀 Game Over</h1>
+  <h2 id="finalScore"></h2>
+  <button onclick="retry()">Retry</button>
+  <button onclick="goMenu()">Menu</button>
 </div>
 
 <script>
+/* PAGE CONTROL */
+function show(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* SOUND (SAFE) */
+function sound(freq){
+  const ctx=new (window.AudioContext||webkitAudioContext)();
+  const o=ctx.createOscillator();
+  const g=ctx.createGain();
+  o.connect(g);g.connect(ctx.destination);
+  o.frequency.value=freq;
+  g.gain.value=0.15;
+  o.start();
+  o.stop(ctx.currentTime+.2);
+}
+
+/* DATA (15 KATEGORI) */
 const data={
-animals:[
- ["Cat",["Cat","Dog","Cow","Horse"],0],
- ["Dog",["Cat","Dog","Fish","Cow"],1],
- ["Bird",["Fish","Bird","Cow","Cat"],1],
- ["Fish",["Fish","Dog","Bird","Cow"],0],
- ["Cow",["Horse","Cow","Dog","Cat"],1]
-],
-numbers:[
- ["One",["One","Two","Three","Four"],0],
- ["Five",["Six","Seven","Five","Eight"],2],
- ["Ten",["Nine","Ten","Eleven","Two"],1]
-],
-body:[
- ["Eye",["Eye","Hand","Foot","Nose"],0],
- ["Hand",["Leg","Hand","Eye","Ear"],1]
-],
-food:[
- ["Rice",["Rice","Bread","Milk","Egg"],0],
- ["Milk",["Tea","Water","Milk","Juice"],2]
-],
-transport:[
- ["Car",["Bike","Car","Bus","Train"],1],
- ["Plane",["Ship","Plane","Car","Bike"],1]
-]
+animals:["Cat","Dog","Cow","Horse","Fish","Bird","Lion","Tiger","Monkey","Duck"],
+numbers:["One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten"],
+body:["Eye","Hand","Leg","Foot","Head","Ear","Nose","Mouth","Hair","Finger"],
+food:["Rice","Bread","Milk","Egg","Apple","Banana","Fish","Chicken","Cake","Soup"],
+transport:["Car","Bus","Train","Bike","Plane","Ship","Taxi","Truck","Motorcycle","Boat"],
+sports:["Football","Basketball","Tennis","Badminton","Swimming","Running","Cycling","Boxing","Volleyball","Baseball"],
+home:["Door","Window","Chair","Table","Bed","Sofa","Kitchen","Bathroom","Roof","Floor"],
+music:["Guitar","Piano","Drum","Violin","Song","Singer","Band","Music","Microphone","Speaker"],
+computer:["Keyboard","Mouse","Monitor","CPU","Laptop","Printer","Internet","File","Folder","Screen"],
+hospital:["Doctor","Nurse","Patient","Medicine","Ambulance","Bed","Injection","Hospital","Mask","Thermometer"],
+garden:["Tree","Flower","Grass","Plant","Soil","Leaf","Seed","Water","Shovel","Pot"],
+bathroom:["Toilet","Shower","Soap","Toothbrush","Toothpaste","Towel","Mirror","Sink","Water","Bucket"],
+colors:["Red","Blue","Green","Yellow","Black","White","Pink","Purple","Orange","Brown"],
+letters:["A","B","C","D","E","F","G","H","I","J"],
+school:["Teacher","Student","Book","Pen","Pencil","Eraser","Bag","Classroom","Desk","Board"]
 };
 
-let category="",index=0,score=0;
+let cat="",q=[],i=0,score=0,time=5,timer;
 
-function startGame(cat){
-  category=cat;
-  index=0;
-  score=0;
-  document.getElementById("menu").classList.add("hidden");
-  document.getElementById("game").classList.remove("hidden");
-  showQuestion();
+/* GAME LOGIC */
+function startGame(c){
+  cat=c;
+  q=[...data[c]];
+  shuffle(q);
+  i=0;score=0;
+  show('game');
+  load();
 }
 
-function showQuestion(){
-  if(index>=data[category].length){
-    alert("Game Over! Score: "+score);
-    backMenu();
-    return;
-  }
-
-  const q=data[category][index];
-  document.getElementById("question").innerText="Select: "+q[0];
-  document.getElementById("answers").innerHTML="";
-
-  q[1].forEach((opt,i)=>{
+function load(){
+  if(i>=q.length){gameOver();return}
+  clearInterval(timer);
+  time=5;
+  document.getElementById("timer").innerText="⏱ "+time;
+  document.getElementById("score").innerText="⭐ "+score;
+  const correct=q[i];
+  document.getElementById("question").innerText="Select: "+correct;
+  const ans=document.getElementById("answers");
+  ans.innerHTML="";
+  const opts=shuffle([correct,...shuffle(q).slice(0,3)]);
+  opts.forEach(o=>{
     const b=document.createElement("button");
     b.className="answer";
-    b.innerText=opt;
-    b.onclick=()=>checkAnswer(i,q[2],b);
-    document.getElementById("answers").appendChild(b);
+    b.innerText=o;
+    b.onclick=()=>{
+      clearInterval(timer);
+      if(o===correct){
+        score++;b.classList.add("correct");sound(700);
+      }else{
+        b.classList.add("wrong");sound(200);
+      }
+      setTimeout(()=>{i++;load()},400);
+    };
+    ans.appendChild(b);
   });
-
-  document.getElementById("info").innerText=
-    (index+1)+" / "+data[category].length;
+  timer=setInterval(()=>{
+    time--;document.getElementById("timer").innerText="⏱ "+time;
+    if(time===0){clearInterval(timer);sound(120);gameOver();}
+  },1000);
 }
 
-function checkAnswer(choice,correct,btn){
-  if(choice===correct){
-    btn.classList.add("correct");
-    score++;
-  }else{
-    btn.classList.add("wrong");
-  }
-  setTimeout(()=>{
-    index++;
-    showQuestion();
-  },400);
+function gameOver(){
+  document.getElementById("finalScore").innerText=
+    `Score: ${score} / ${q.length}`;
+  show('over');
 }
+function retry(){startGame(cat)}
+function goMenu(){show('menu')}
 
-function backMenu(){
-  document.getElementById("game").classList.add("hidden");
-  document.getElementById("menu").classList.remove("hidden");
-}
+/* UTIL */
+function shuffle(a){return a.sort(()=>Math.random()-.5)}
 </script>
 
 </body>
